@@ -11,14 +11,14 @@ describe('quizHandlerRegistry', () => {
     expect(quizHandlerRegistry).toBeInstanceOf(QuizHandlerRegistry)
   })
 
-  it('registers known handlers by quiz type', () => {
-    expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.QUEM_E_QUEM)).toBeDefined()
-    expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.SQUAD_WORDLE)).toBeDefined()
+  it('registers the qual e a camisa handler', () => {
+    expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.QUAL_E_A_CAMISA)).toBeDefined()
   })
 
-  it('groups handlers that share the same API', () => {
+  it('groups qual e a camisa under the squad humans API', () => {
     const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME)
 
-    expect(handlers.length).toBeGreaterThanOrEqual(3)
+    expect(handlers).toHaveLength(1)
+    expect(handlers[0]?.type).toBe(QUIZ_TYPE.QUAL_E_A_CAMISA)
   })
 })

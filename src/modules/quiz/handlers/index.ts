@@ -1,3 +1,5 @@
 import { QuizHandlerRegistry } from '~/modules/quiz/registry'
 
-export const quizHandlerRegistry = new QuizHandlerRegistry([])
+import { qualECamisaHandler } from './qual-e-a-camisa.handler'
+
+export const quizHandlerRegistry = new QuizHandlerRegistry([qualECamisaHandler])
