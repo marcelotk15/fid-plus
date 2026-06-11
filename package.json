@@ -16,12 +16,18 @@
     "lint:fix": "oxlint --fix .",
     "format": "oxfmt --check .",
     "format:fix": "oxfmt .",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "postinstall": "wxt prepare"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.8",
+    "happy-dom": "^20.10.2",
     "oxfmt": "^0.54.0",
     "oxlint": "^1.69.0",
     "typescript": "^5.9.3",
+    "vitest": "^4.1.8",
     "wxt": "^0.20.26"
   }
 }
