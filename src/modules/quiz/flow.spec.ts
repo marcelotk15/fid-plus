@@ -69,6 +69,29 @@ describe('readModalQuizType', () => {
     expect(quizType).toBe(QUIZ_TYPE.QUEM_E_QUEM)
   })
 
+  it('infers wordle da liga from a three-part wordle hint when title is unknown', async () => {
+    const titleElement = document.createElement('h2')
+    titleElement.textContent = 'Minigame'
+
+    document.body.innerHTML = `
+      <div role="dialog">
+        <div class="text-center space-y-1">
+          <p class="text-xs text-muted-foreground">Pista</p>
+          <p class="text-sm font-medium">Royal Identity · LW · 5 letras</p>
+        </div>
+      </div>
+    `
+
+    const ctx = createMockContext({
+      document,
+      waitForElement: vi.fn(async () => titleElement),
+    })
+
+    const quizType = await readModalQuizType(ctx)
+
+    expect(quizType).toBe(QUIZ_TYPE.WORDLE_DA_LIGA)
+  })
+
   it('returns null and logs error when title is unknown', async () => {
     const titleElement = document.createElement('h2')
     titleElement.textContent = 'Unknown Quiz'

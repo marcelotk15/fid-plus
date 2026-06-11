@@ -4,10 +4,12 @@ import { qualECamisaHandler } from './qual-e-a-camisa.handler'
 import { quemEQuemHandler } from './quem-e-quem.handler'
 import { squadWordleHandler } from './squad-wordle.handler'
 import { stadiumsHandler } from './stadiums.handler'
+import { wordleDaLigaHandler } from './wordle-da-liga.handler'
 
 export const quizHandlerRegistry = new QuizHandlerRegistry([
   qualECamisaHandler,
   quemEQuemHandler,
   squadWordleHandler,
   stadiumsHandler,
+  wordleDaLigaHandler,
 ])

@@ -61,11 +61,11 @@ describe('QuizHandlerRegistry', () => {
     expect(registry.resolve(MESSAGE_TYPE.GET_STADIUMS_FOR_MINIGAME, quizRoute)).toBeNull()
   })
 
-  it('accepts activeQuizType with null API in the map', () => {
+  it('resolves wordle da liga by activeQuizType with league humans API', () => {
     const wordleHandler = createMockHandler({ type: QUIZ_TYPE.WORDLE_DA_LIGA })
     const registry = new QuizHandlerRegistry([wordleHandler])
 
-    const resolved = registry.resolve(MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME, quizRoute, QUIZ_TYPE.WORDLE_DA_LIGA)
+    const resolved = registry.resolve(MESSAGE_TYPE.GET_LEAGUE_HUMANS_FOR_MINIGAME, quizRoute, QUIZ_TYPE.WORDLE_DA_LIGA)
 
     expect(resolved).toBe(wordleHandler)
   })

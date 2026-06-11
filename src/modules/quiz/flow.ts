@@ -24,6 +24,17 @@ function resolveQuizTypeFromTitle(title: string): QuizType | null {
 }
 
 function inferQuizTypeFromQuestion(ctx: QuizHandlerContext): QuizType | null {
+  const wordleHint = Array.from(ctx.document.querySelectorAll('[role="dialog"] p.text-sm.font-medium')).find(
+    (element) => getTextContent(element).includes('letras'),
+  )
+
+  if (wordleHint) {
+    const hintText = getTextContent(wordleHint)
+    const isLeagueWordle = /^.+?\s*·\s*[^·]+?\s*·\s*\d+\s*letras?$/i.test(hintText)
+
+    return isLeagueWordle ? QUIZ_TYPE.WORDLE_DA_LIGA : QUIZ_TYPE.SQUAD_WORDLE
+  }
+
   const questionBox = ctx.document.querySelector(QUIZ_QUESTION_SELECTOR)
 
   if (!questionBox) return null
@@ -40,14 +51,6 @@ function inferQuizTypeFromQuestion(ctx: QuizHandlerContext): QuizType | null {
     if (prompt.includes('camisa')) {
       return QUIZ_TYPE.QUAL_E_A_CAMISA
     }
-  }
-
-  const wordleHint = Array.from(ctx.document.querySelectorAll('[role="dialog"] p.text-sm.font-medium')).find(
-    (element) => getTextContent(element).includes('letras'),
-  )
-
-  if (wordleHint) {
-    return QUIZ_TYPE.SQUAD_WORDLE
   }
 
   const nameLine = questionBox.querySelector('.font-display.font-semibold')

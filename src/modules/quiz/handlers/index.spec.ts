@@ -27,6 +27,10 @@ describe('quizHandlerRegistry', () => {
     expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.TIME_ESTADIO)).toBeDefined()
   })
 
+  it('registers the wordle da liga handler', () => {
+    expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.WORDLE_DA_LIGA)).toBeDefined()
+  })
+
   it('groups squad quizzes under the squad humans API', () => {
     const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME)
 
@@ -43,5 +47,12 @@ describe('quizHandlerRegistry', () => {
 
     expect(handlers).toHaveLength(1)
     expect(handlers[0]?.type).toBe(QUIZ_TYPE.TIME_ESTADIO)
+  })
+
+  it('groups wordle da liga under the league humans API', () => {
+    const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_LEAGUE_HUMANS_FOR_MINIGAME)
+
+    expect(handlers).toHaveLength(1)
+    expect(handlers[0]?.type).toBe(QUIZ_TYPE.WORDLE_DA_LIGA)
   })
 })
