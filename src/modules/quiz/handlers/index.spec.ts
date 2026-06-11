@@ -23,6 +23,10 @@ describe('quizHandlerRegistry', () => {
     expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.SQUAD_WORDLE)).toBeDefined()
   })
 
+  it('registers the time estadio handler', () => {
+    expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.TIME_ESTADIO)).toBeDefined()
+  })
+
   it('groups squad quizzes under the squad humans API', () => {
     const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME)
 
@@ -32,5 +36,12 @@ describe('quizHandlerRegistry', () => {
       QUIZ_TYPE.QUEM_E_QUEM,
       QUIZ_TYPE.SQUAD_WORDLE,
     ])
+  })
+
+  it('groups time estadio under the stadiums API', () => {
+    const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_STADIUMS_FOR_MINIGAME)
+
+    expect(handlers).toHaveLength(1)
+    expect(handlers[0]?.type).toBe(QUIZ_TYPE.TIME_ESTADIO)
   })
 })
