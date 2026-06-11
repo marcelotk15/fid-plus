@@ -5,10 +5,59 @@ import { logger } from '~/modules/logger'
 import { QUIZ_MODAL_TITLE_SELECTOR, QUIZ_TYPE } from '~/modules/quiz/constants'
 import { getTextContent, normalizeText } from '~/modules/shared/text'
 
+const QUIZ_QUESTION_SELECTOR = '[role="dialog"] .rounded-lg.border.p-4'
+
 function resolveQuizTypeFromTitle(title: string): QuizType | null {
   const normalized = normalizeText(title)
 
-  return Object.values(QUIZ_TYPE).find((quizType) => normalizeText(quizType) === normalized) ?? null
+  const exact = Object.values(QUIZ_TYPE).find((quizType) => normalizeText(quizType) === normalized)
+
+  if (exact) return exact
+
+  return (
+    Object.values(QUIZ_TYPE).find((quizType) => {
+      const normalizedQuizType = normalizeText(quizType)
+
+      return normalized.startsWith(normalizedQuizType) || normalized.includes(normalizedQuizType)
+    }) ?? null
+  )
+}
+
+function inferQuizTypeFromQuestion(ctx: QuizHandlerContext): QuizType | null {
+  const questionBox = ctx.document.querySelector(QUIZ_QUESTION_SELECTOR)
+
+  if (!questionBox) return null
+
+  const uppercasePrompt = questionBox.querySelector('p.text-xs.uppercase')
+
+  if (uppercasePrompt) {
+    const prompt = getTextContent(uppercasePrompt)
+
+    if (prompt.includes('posição')) {
+      return QUIZ_TYPE.QUEM_E_QUEM
+    }
+
+    if (prompt.includes('camisa')) {
+      return QUIZ_TYPE.QUAL_E_A_CAMISA
+    }
+  }
+
+  const wordleHint = Array.from(ctx.document.querySelectorAll('[role="dialog"] p.text-sm.font-medium')).find(
+    (element) => getTextContent(element).includes('letras'),
+  )
+
+  if (wordleHint) {
+    return QUIZ_TYPE.SQUAD_WORDLE
+  }
+
+  const nameLine = questionBox.querySelector('.font-display.font-semibold')
+  const positionLine = questionBox.querySelector('p.text-xs.text-muted-foreground:not(.uppercase)')
+
+  if (nameLine && positionLine && !getTextContent(nameLine).includes('#')) {
+    return QUIZ_TYPE.QUAL_E_A_CAMISA
+  }
+
+  return null
 }
 
 /**
@@ -18,7 +67,7 @@ function resolveQuizTypeFromTitle(title: string): QuizType | null {
 export async function readModalQuizType(ctx: QuizHandlerContext): Promise<QuizType | null> {
   const titleElement = await ctx.waitForElement(QUIZ_MODAL_TITLE_SELECTOR)
   const title = getTextContent(titleElement)
-  const quizType = resolveQuizTypeFromTitle(title)
+  const quizType = resolveQuizTypeFromTitle(title) ?? inferQuizTypeFromQuestion(ctx)
 
   if (!quizType) {
     logger.error('unknown quiz title in modal', { title })
