@@ -3,7 +3,7 @@
   "ignorePatterns": [".wxt/**", ".output/**", "node_modules/**"],
   "printWidth": 120,
   "singleQuote": true,
-  "trailingComma": "none",
+  "trailingComma": "all",
   "useTabs": false,
   "semi": false,
   "arrowParens": "always",
