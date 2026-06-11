@@ -127,9 +127,7 @@ export class QuizRunner {
   private async resolveAndSolve(route: RouteChangePayload, body: unknown, apiType: ApiMessageType): Promise<void> {
     const handlerContext = this.createHandlerContext(route)
 
-    if (!this.activeQuizType) {
-      this.activeQuizType = await readModalQuizType(handlerContext)
-    }
+    this.activeQuizType = await readModalQuizType(handlerContext)
 
     logger.info('active quiz type', { activeQuizType: this.activeQuizType })
 

@@ -15,6 +15,10 @@ describe('quizHandlerRegistry', () => {
     expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.QUAL_E_A_CAMISA)).toBeDefined()
   })
 
+  it('registers the quem e quem handler', () => {
+    expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.QUEM_E_QUEM)).toBeDefined()
+  })
+
   it('registers the squad wordle handler', () => {
     expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.SQUAD_WORDLE)).toBeDefined()
   })
@@ -22,7 +26,11 @@ describe('quizHandlerRegistry', () => {
   it('groups squad quizzes under the squad humans API', () => {
     const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME)
 
-    expect(handlers).toHaveLength(2)
-    expect(handlers.map((handler) => handler.type)).toEqual([QUIZ_TYPE.QUAL_E_A_CAMISA, QUIZ_TYPE.SQUAD_WORDLE])
+    expect(handlers).toHaveLength(3)
+    expect(handlers.map((handler) => handler.type)).toEqual([
+      QUIZ_TYPE.QUAL_E_A_CAMISA,
+      QUIZ_TYPE.QUEM_E_QUEM,
+      QUIZ_TYPE.SQUAD_WORDLE,
+    ])
   })
 })

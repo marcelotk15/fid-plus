@@ -50,7 +50,11 @@ export class QuizHandlerRegistry {
       if (byQuizType) return byQuizType
     }
 
-    return candidates.find((handler) => handler.matchesRoute(route)) ?? candidates[0]
+    if (candidates.length === 1) {
+      return candidates[0]
+    }
+
+    return null
   }
 
   private matchesApiType(quizType: QuizType, apiType: ApiMessageType): boolean {

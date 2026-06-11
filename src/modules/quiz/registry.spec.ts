@@ -39,7 +39,7 @@ describe('QuizHandlerRegistry', () => {
     expect(resolved).toBe(quemEQuem)
   })
 
-  it('prioritizes handler that matches route when multiple candidates exist', () => {
+  it('returns null when multiple candidates share the API and quiz type is unknown', () => {
     const matchesRoute = createMockHandler({
       type: QUIZ_TYPE.SQUAD_WORDLE,
       matchesRoute: vi.fn((route) => route.pathname.startsWith('/player/quiz')),
@@ -52,7 +52,7 @@ describe('QuizHandlerRegistry', () => {
 
     const resolved = registry.resolve(MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME, quizRoute)
 
-    expect(resolved).toBe(matchesRoute)
+    expect(resolved).toBeNull()
   })
 
   it('returns null when there are no candidates', () => {
@@ -70,7 +70,7 @@ describe('QuizHandlerRegistry', () => {
     expect(resolved).toBe(wordleHandler)
   })
 
-  it('returns first candidate when none match the route', () => {
+  it('returns null when multiple candidates share the API and quiz type is unknown', () => {
     const first = createMockHandler({
       type: QUIZ_TYPE.QUEM_E_QUEM,
       matchesRoute: vi.fn(() => false),
@@ -83,6 +83,6 @@ describe('QuizHandlerRegistry', () => {
 
     const resolved = registry.resolve(MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME, homeRoute)
 
-    expect(resolved).toBe(first)
+    expect(resolved).toBeNull()
   })
 })
