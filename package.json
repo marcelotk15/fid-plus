@@ -1,8 +1,8 @@
 {
   "name": "wxt-starter",
-  "description": "manifest.json description",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "manifest.json description",
   "type": "module",
   "scripts": {
     "dev": "wxt",
@@ -12,9 +12,15 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "format": "oxfmt --check .",
+    "format:fix": "oxfmt .",
     "postinstall": "wxt prepare"
   },
   "devDependencies": {
+    "oxfmt": "^0.54.0",
+    "oxlint": "^1.69.0",
     "typescript": "^5.9.3",
     "wxt": "^0.20.26"
   }
