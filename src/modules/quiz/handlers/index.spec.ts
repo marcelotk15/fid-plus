@@ -31,6 +31,10 @@ describe('quizHandlerRegistry', () => {
     expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.WORDLE_DA_LIGA)).toBeDefined()
   })
 
+  it('registers the artilheiro da rodada handler', () => {
+    expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.ARTILHEIRO_DA_RODADA)).toBeDefined()
+  })
+
   it('groups squad quizzes under the squad humans API', () => {
     const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME)
 
@@ -54,5 +58,12 @@ describe('quizHandlerRegistry', () => {
 
     expect(handlers).toHaveLength(1)
     expect(handlers[0]?.type).toBe(QUIZ_TYPE.WORDLE_DA_LIGA)
+  })
+
+  it('groups artilheiro da rodada under the top scorers API', () => {
+    const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_TOP_SCORERS_FOR_MINIGAME)
+
+    expect(handlers).toHaveLength(1)
+    expect(handlers[0]?.type).toBe(QUIZ_TYPE.ARTILHEIRO_DA_RODADA)
   })
 })

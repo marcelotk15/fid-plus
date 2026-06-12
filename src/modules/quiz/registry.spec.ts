@@ -70,6 +70,19 @@ describe('QuizHandlerRegistry', () => {
     expect(resolved).toBe(wordleHandler)
   })
 
+  it('resolves artilheiro da rodada by activeQuizType with top scorers API', () => {
+    const topScorersHandler = createMockHandler({ type: QUIZ_TYPE.ARTILHEIRO_DA_RODADA })
+    const registry = new QuizHandlerRegistry([topScorersHandler])
+
+    const resolved = registry.resolve(
+      MESSAGE_TYPE.GET_TOP_SCORERS_FOR_MINIGAME,
+      quizRoute,
+      QUIZ_TYPE.ARTILHEIRO_DA_RODADA,
+    )
+
+    expect(resolved).toBe(topScorersHandler)
+  })
+
   it('returns null when multiple candidates share the API and quiz type is unknown', () => {
     const first = createMockHandler({
       type: QUIZ_TYPE.QUEM_E_QUEM,

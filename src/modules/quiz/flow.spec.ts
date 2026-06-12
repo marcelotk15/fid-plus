@@ -69,6 +69,29 @@ describe('readModalQuizType', () => {
     expect(quizType).toBe(QUIZ_TYPE.QUEM_E_QUEM)
   })
 
+  it('infers artilheiro da rodada from the artilheiro prompt when title is unknown', async () => {
+    const titleElement = document.createElement('h2')
+    titleElement.textContent = 'Minigame'
+
+    document.body.innerHTML = `
+      <div role="dialog">
+        <div class="rounded-lg border p-4 text-center space-y-1">
+          <p class="text-xs text-muted-foreground uppercase tracking-wide">Quem foi o artilheiro?</p>
+          <p class="font-display font-semibold text-base">Rodada 6 · T1</p>
+        </div>
+      </div>
+    `
+
+    const ctx = createMockContext({
+      document,
+      waitForElement: vi.fn(async () => titleElement),
+    })
+
+    const quizType = await readModalQuizType(ctx)
+
+    expect(quizType).toBe(QUIZ_TYPE.ARTILHEIRO_DA_RODADA)
+  })
+
   it('infers wordle da liga from a three-part wordle hint when title is unknown', async () => {
     const titleElement = document.createElement('h2')
     titleElement.textContent = 'Minigame'

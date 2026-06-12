@@ -27,6 +27,16 @@ export interface QuizHandler<TData = unknown> {
   solve(data: TData, ctx: QuizHandlerContext): Promise<void>
 }
 
+/** Handlers that cache multiple API payloads before answering from the DOM. */
+export interface CachedQuizHandler<TData = unknown> extends QuizHandler<TData> {
+  storePayload(data: TData): void
+  progress(ctx: QuizHandlerContext): Promise<void>
+}
+
+export function isCachedQuizHandler(handler: QuizHandler): handler is CachedQuizHandler {
+  return 'storePayload' in handler && 'progress' in handler
+}
+
 export abstract class BaseQuizHandler<TData = unknown> implements QuizHandler<TData> {
   abstract readonly type: QuizType
 

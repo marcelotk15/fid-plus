@@ -51,6 +51,10 @@ function inferQuizTypeFromQuestion(ctx: QuizHandlerContext): QuizType | null {
     if (prompt.includes('camisa')) {
       return QUIZ_TYPE.QUAL_E_A_CAMISA
     }
+
+    if (prompt.includes('artilheiro')) {
+      return QUIZ_TYPE.ARTILHEIRO_DA_RODADA
+    }
   }
 
   const nameLine = questionBox.querySelector('.font-display.font-semibold')

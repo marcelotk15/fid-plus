@@ -134,6 +134,102 @@ describe('QuizRunner', () => {
     })
   })
 
+  it('caches all payloads in a batch before calling progress once for cached handlers', async () => {
+    const storePayload = vi.fn()
+    const progress = vi.fn(async () => {})
+
+    const handler = {
+      type: QUIZ_TYPE.ARTILHEIRO_DA_RODADA,
+      matchesRoute: vi.fn(() => true),
+      parsePayload: vi.fn((body: unknown) => body),
+      storePayload,
+      progress,
+      solve: vi.fn(async () => {}),
+    }
+
+    const runner = new QuizRunner(new QuizHandlerRegistry([handler]))
+
+    runner.onRouteChange(quizRoute)
+    ;(readModalQuizType as ReturnType<typeof vi.fn>).mockResolvedValue(QUIZ_TYPE.ARTILHEIRO_DA_RODADA)
+
+    runner.onQuizData(
+      createQuizMessage({
+        type: MESSAGE_TYPE.GET_TOP_SCORERS_FOR_MINIGAME,
+        body: [{ round_number: 6, season_number: 1, full_name: 'Player A' }],
+      }),
+    )
+    runner.onQuizData(
+      createQuizMessage({
+        type: MESSAGE_TYPE.GET_TOP_SCORERS_FOR_MINIGAME,
+        body: [{ round_number: 7, season_number: 1, full_name: 'Player B' }],
+      }),
+    )
+
+    await waitForAssertion(() => {
+      expect(storePayload).toHaveBeenCalledTimes(2)
+      expect(progress).toHaveBeenCalled()
+      expect(handler.solve).not.toHaveBeenCalled()
+    })
+  })
+
+  it('stores later payloads without starting a second progress while one is in flight', async () => {
+    let releaseProgress: (() => void) | undefined
+
+    const progressGate = new Promise<void>((resolve) => {
+      releaseProgress = resolve
+    })
+
+    const storePayload = vi.fn()
+    const progress = vi.fn(async () => {
+      await progressGate
+    })
+
+    const handler = {
+      type: QUIZ_TYPE.ARTILHEIRO_DA_RODADA,
+      matchesRoute: vi.fn(() => true),
+      parsePayload: vi.fn((body: unknown) => body),
+      storePayload,
+      progress,
+      solve: vi.fn(async () => {}),
+    }
+
+    const runner = new QuizRunner(new QuizHandlerRegistry([handler]))
+
+    runner.onRouteChange(quizRoute)
+    ;(readModalQuizType as ReturnType<typeof vi.fn>).mockResolvedValue(QUIZ_TYPE.ARTILHEIRO_DA_RODADA)
+
+    runner.onQuizData(
+      createQuizMessage({
+        type: MESSAGE_TYPE.GET_TOP_SCORERS_FOR_MINIGAME,
+        body: [{ round_number: 6, season_number: 1, full_name: 'Player A' }],
+      }),
+    )
+
+    await waitForAssertion(() => {
+      expect(progress).toHaveBeenCalledOnce()
+      expect(storePayload).toHaveBeenCalledOnce()
+    })
+
+    runner.onQuizData(
+      createQuizMessage({
+        type: MESSAGE_TYPE.GET_TOP_SCORERS_FOR_MINIGAME,
+        body: [{ round_number: 7, season_number: 1, full_name: 'Player B' }],
+      }),
+    )
+
+    await waitForAssertion(() => {
+      expect(storePayload).toHaveBeenCalledOnce()
+      expect(progress).toHaveBeenCalledOnce()
+    })
+
+    releaseProgress?.()
+
+    await waitForAssertion(() => {
+      expect(storePayload).toHaveBeenCalledTimes(2)
+      expect(progress.mock.calls.length).toBeGreaterThanOrEqual(1)
+    })
+  })
+
   it('clears state on dispose', async () => {
     const handler = createMockHandler({ type: QUIZ_TYPE.QUEM_E_QUEM })
     const runner = new QuizRunner(new QuizHandlerRegistry([handler]))
