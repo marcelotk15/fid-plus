@@ -17,7 +17,7 @@ export default defineConfig({
   srcDir: 'src',
   manifest: () => ({
     name: 'FID Plus',
-    description: 'Improve some features of FID (Football Identity) extension',
+    description: 'Automatiza a resolução dos quizzes diários do Football Identity.',
     icons: iconMap,
     action: {
       default_icon: iconMap,
