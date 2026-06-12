@@ -19,11 +19,16 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "postinstall": "wxt prepare"
+    "commitlint": "commitlint",
+    "postinstall": "wxt prepare",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@vitest/coverage-v8": "^4.1.8",
     "happy-dom": "^20.10.2",
+    "husky": "^9.1.7",
     "oxfmt": "^0.54.0",
     "oxlint": "^1.69.0",
     "typescript": "^5.9.3",
