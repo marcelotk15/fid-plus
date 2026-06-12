@@ -115,6 +115,30 @@ describe('readModalQuizType', () => {
     expect(quizType).toBe(QUIZ_TYPE.WORDLE_DA_LIGA)
   })
 
+  it('infers quem joga no clube from marque quem joga em prompt when title is unknown', async () => {
+    const titleElement = document.createElement('h2')
+    titleElement.textContent = 'Minigame'
+
+    document.body.innerHTML = `
+      <div role="dialog">
+        <div class="rounded-lg border border-tactical/30 bg-tactical/5 p-3 text-center">
+          <p class="text-xs text-muted-foreground uppercase tracking-wide">Marque quem joga em:</p>
+          <p class="font-display font-bold text-lg">Leichester FC</p>
+          <p class="text-[11px] text-muted-foreground">4 estão neste clube</p>
+        </div>
+      </div>
+    `
+
+    const ctx = createMockContext({
+      document,
+      waitForElement: vi.fn(async () => titleElement),
+    })
+
+    const quizType = await readModalQuizType(ctx)
+
+    expect(quizType).toBe(QUIZ_TYPE.QUEM_JOGA_NO_CLUBE)
+  })
+
   it('infers conexoes da liga from the mesmo clube objective when title is unknown', async () => {
     const titleElement = document.createElement('h2')
     titleElement.textContent = 'Minigame'

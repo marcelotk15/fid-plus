@@ -110,7 +110,14 @@ export class QuizRunner {
         const batch = this.drainQueue()
         const handlerContext = this.createHandlerContext(route)
 
-        this.activeQuizType = await readModalQuizType(handlerContext)
+        try {
+          this.activeQuizType = await readModalQuizType(handlerContext)
+        } catch (error) {
+          logger.error('failed to detect quiz type from modal', {
+            error: error instanceof Error ? error.message : String(error),
+          })
+          continue
+        }
 
         logger.info('active quiz type', { activeQuizType: this.activeQuizType })
 

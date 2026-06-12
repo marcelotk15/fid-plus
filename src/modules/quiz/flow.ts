@@ -24,6 +24,18 @@ function resolveQuizTypeFromTitle(title: string): QuizType | null {
 }
 
 function inferQuizTypeFromQuestion(ctx: QuizHandlerContext): QuizType | null {
+  const quemJogaPrompt = Array.from(ctx.document.querySelectorAll('[role="dialog"] p')).find((element) => {
+    const text = getTextContent(element)
+
+    return (
+      text.includes('marque quem joga em') || text.includes('estao neste clube') || text.includes('estão neste clube')
+    )
+  })
+
+  if (quemJogaPrompt) {
+    return QUIZ_TYPE.QUEM_JOGA_NO_CLUBE
+  }
+
   const sameClubObjective = Array.from(
     ctx.document.querySelectorAll('[role="dialog"] span.text-muted-foreground'),
   ).find((element) => getTextContent(element).includes('mesmo clube'))

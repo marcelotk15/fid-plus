@@ -83,10 +83,24 @@ describe('QuizHandlerRegistry', () => {
     expect(resolved).toBe(conexoesHandler)
   })
 
+  it('resolves quem joga no clube by activeQuizType with league humans API', () => {
+    const quemJogaHandler = createMockHandler({ type: QUIZ_TYPE.QUEM_JOGA_NO_CLUBE })
+    const registry = new QuizHandlerRegistry([quemJogaHandler])
+
+    const resolved = registry.resolve(
+      MESSAGE_TYPE.GET_LEAGUE_HUMANS_FOR_MINIGAME,
+      quizRoute,
+      QUIZ_TYPE.QUEM_JOGA_NO_CLUBE,
+    )
+
+    expect(resolved).toBe(quemJogaHandler)
+  })
+
   it('returns null when multiple league quizzes share the API and quiz type is unknown', () => {
     const wordleHandler = createMockHandler({ type: QUIZ_TYPE.WORDLE_DA_LIGA })
     const conexoesHandler = createMockHandler({ type: QUIZ_TYPE.CONEXOES_DA_LIGA })
-    const registry = new QuizHandlerRegistry([wordleHandler, conexoesHandler])
+    const quemJogaHandler = createMockHandler({ type: QUIZ_TYPE.QUEM_JOGA_NO_CLUBE })
+    const registry = new QuizHandlerRegistry([wordleHandler, conexoesHandler, quemJogaHandler])
 
     const resolved = registry.resolve(MESSAGE_TYPE.GET_LEAGUE_HUMANS_FOR_MINIGAME, quizRoute)
 
