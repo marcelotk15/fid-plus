@@ -162,5 +162,74 @@ describe('SquadWordleHandler', () => {
       await expect(solvePromise).resolves.toBeUndefined()
       expect(guessButton.isConnected).toBe(true)
     })
+
+    it('tries the next candidate when the input is cleared after a wrong guess', async () => {
+      buildDialogDom({ position: 'RM', letterCount: 8 })
+
+      const wrongPlayer = createSquadHuman({
+        full_name: 'Fernando',
+        primary_position: 'RM',
+        player_profile_id: 'player-wrong',
+      })
+      const correctPlayer = createSquadHuman({
+        full_name: 'Federico',
+        primary_position: 'RM',
+        player_profile_id: 'player-correct',
+      })
+      const input = document.querySelector('[role="dialog"] input') as HTMLInputElement
+      const guessButton = document.querySelector('[role="dialog"] button') as HTMLButtonElement
+      const clickSpy = vi.spyOn(guessButton, 'click')
+
+      const ctx = createRealWaitForElementContext()
+
+      const solvePromise = handler.solve([wrongPlayer, correctPlayer], ctx)
+
+      setTimeout(() => {
+        input.value = ''
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+      }, 30)
+
+      setTimeout(() => {
+        input.remove()
+        guessButton.remove()
+      }, 120)
+
+      await solvePromise
+
+      expect(clickSpy).toHaveBeenCalledTimes(2)
+      expect(input.value).toBe('FEDERICO')
+    })
+
+    it('throws when every candidate guess is wrong', async () => {
+      buildDialogDom({ position: 'RM', letterCount: 8 })
+
+      const firstPlayer = createSquadHuman({
+        full_name: 'Fernando',
+        primary_position: 'RM',
+        player_profile_id: 'player-1',
+      })
+      const secondPlayer = createSquadHuman({
+        full_name: 'Federico',
+        primary_position: 'RM',
+        player_profile_id: 'player-2',
+      })
+      const input = document.querySelector('[role="dialog"] input') as HTMLInputElement
+
+      const ctx = createRealWaitForElementContext()
+
+      const solvePromise = handler.solve([firstPlayer, secondPlayer], ctx)
+
+      setTimeout(() => {
+        input.value = ''
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+      }, 30)
+
+      setTimeout(() => {
+        input.value = ''
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+      }, 120)
+
+      await expect(solvePromise).rejects.toThrow('All 2 guesses failed for rm (8 letters)')
+    })
   })
 })

@@ -27,23 +27,32 @@ export class SquadWordleHandler extends BaseQuizHandler<SquadHumanForMinigame[]>
 
   async solve(data: SquadHumanForMinigame[], ctx: QuizHandlerContext) {
     const hint = await this.readHint(ctx)
-    const player = this.findTargetPlayer(data, hint)
+    const candidates = this.findCandidatePlayers(data, hint)
 
-    if (!player) {
+    if (candidates.length === 0) {
       throw new Error(`Player not found in squad data: ${hint.position} (${hint.letterCount} letters)`)
     }
 
-    const answer = this.getFirstName(player.full_name)
+    for (const [index, player] of candidates.entries()) {
+      const answer = this.getFirstName(player.full_name)
 
-    logger.info('solving squad wordle', {
-      position: hint.position,
-      letterCount: hint.letterCount,
-      answer,
-    })
+      logger.info('solving squad wordle', {
+        position: hint.position,
+        letterCount: hint.letterCount,
+        answer,
+        attempt: index + 1,
+        totalCandidates: candidates.length,
+      })
 
-    await this.fillGuessInput(ctx, answer)
-    await this.submitGuess(ctx)
-    await this.waitForGuessSuccess(ctx)
+      await this.fillGuessInput(ctx, answer)
+      await this.submitGuess(ctx)
+
+      const result = await this.waitForGuessResult(ctx)
+
+      if (result === 'success') return
+    }
+
+    throw new Error(`All ${candidates.length} guesses failed for ${hint.position} (${hint.letterCount} letters)`)
   }
 
   private async readHint(ctx: QuizHandlerContext): Promise<SquadWordleHint> {
@@ -85,7 +94,7 @@ export class SquadWordleHandler extends BaseQuizHandler<SquadHumanForMinigame[]>
     return fullName.split(/\s+/)[0] ?? fullName
   }
 
-  private findTargetPlayer(players: SquadHumanForMinigame[], hint: SquadWordleHint): SquadHumanForMinigame | null {
+  private findCandidatePlayers(players: SquadHumanForMinigame[], hint: SquadWordleHint): SquadHumanForMinigame[] {
     const normalizedPosition = normalizeText(hint.position)
 
     const matches = players.filter(
@@ -94,9 +103,10 @@ export class SquadWordleHandler extends BaseQuizHandler<SquadHumanForMinigame[]>
         this.getFirstName(player.full_name).length === hint.letterCount,
     )
 
-    if (matches.length === 0) return null
+    const humans = matches.filter((player) => player.is_human)
+    const nonHumans = matches.filter((player) => !player.is_human)
 
-    return matches.find((player) => player.is_human) ?? matches[0]
+    return [...humans, ...nonHumans]
   }
 
   private async fillGuessInput(ctx: QuizHandlerContext, answer: string): Promise<void> {
@@ -131,7 +141,7 @@ export class SquadWordleHandler extends BaseQuizHandler<SquadHumanForMinigame[]>
     clickElement(button)
   }
 
-  private async waitForGuessSuccess(ctx: QuizHandlerContext): Promise<void> {
+  private async waitForGuessResult(ctx: QuizHandlerContext): Promise<'success' | 'incorrect'> {
     return new Promise((resolve, reject) => {
       if (ctx.signal.aborted) {
         reject(new DOMException('Aborted', 'AbortError'))
@@ -140,13 +150,23 @@ export class SquadWordleHandler extends BaseQuizHandler<SquadHumanForMinigame[]>
 
       let observer: MutationObserver | undefined
       let timeoutId: ReturnType<typeof setTimeout> | undefined
+      let pollId: ReturnType<typeof setInterval> | undefined
+      const input = ctx.document.querySelector(this.guessInputSelector)
 
       const cleanup = () => {
         observer?.disconnect()
         ctx.signal.removeEventListener('abort', onAbort)
 
+        if (input instanceof HTMLInputElement) {
+          input.removeEventListener('input', check)
+        }
+
         if (timeoutId !== undefined) {
           clearTimeout(timeoutId)
+        }
+
+        if (pollId !== undefined) {
+          clearInterval(pollId)
         }
       }
 
@@ -156,22 +176,37 @@ export class SquadWordleHandler extends BaseQuizHandler<SquadHumanForMinigame[]>
       }
 
       const hasSucceeded = () => {
-        const input = ctx.document.querySelector(this.guessInputSelector)
+        const currentInput = ctx.document.querySelector(this.guessInputSelector)
         const buttons = findElementsByText(ctx.document, this.guessButtonSelector, 'Chutar')
 
-        return !input || buttons.length === 0
+        return !currentInput || buttons.length === 0
+      }
+
+      const isIncorrect = () => {
+        const currentInput = ctx.document.querySelector(this.guessInputSelector)
+        const buttons = findElementsByText(ctx.document, this.guessButtonSelector, 'Chutar')
+
+        if (!(currentInput instanceof HTMLInputElement) || buttons.length === 0) return false
+
+        return currentInput.value === ''
       }
 
       const check = () => {
         if (hasSucceeded()) {
           cleanup()
-          resolve()
+          resolve('success')
+          return
+        }
+
+        if (isIncorrect()) {
+          cleanup()
+          resolve('incorrect')
         }
       }
 
       timeoutId = setTimeout(() => {
         cleanup()
-        reject(new Error('Guess success timeout: input and submit button still present'))
+        reject(new Error('Guess result timeout: input and submit button still present'))
       }, this.successTimeoutMs)
 
       const observeTarget = ctx.document.querySelector(this.dialogSelector) ?? ctx.document.documentElement
@@ -180,10 +215,18 @@ export class SquadWordleHandler extends BaseQuizHandler<SquadHumanForMinigame[]>
 
       ctx.signal.addEventListener('abort', onAbort, { once: true })
 
+      if (input instanceof HTMLInputElement) {
+        input.addEventListener('input', check)
+      }
+
       observer.observe(observeTarget, {
         childList: true,
         subtree: true,
+        attributes: true,
+        characterData: true,
       })
+
+      pollId = setInterval(check, 100)
 
       check()
     })
