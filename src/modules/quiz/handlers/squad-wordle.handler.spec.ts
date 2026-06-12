@@ -82,8 +82,10 @@ describe('SquadWordleHandler', () => {
 
       const solvePromise = handler.solve([player], ctx)
 
-      input.remove()
-      guessButton.remove()
+      setTimeout(() => {
+        input.remove()
+        guessButton.remove()
+      }, 0)
 
       await solvePromise
 
@@ -105,8 +107,10 @@ describe('SquadWordleHandler', () => {
 
       const solvePromise = handler.solve([player], ctx)
 
-      input.remove()
-      guessButton.remove()
+      setTimeout(() => {
+        input.remove()
+        guessButton.remove()
+      }, 0)
 
       await solvePromise
 

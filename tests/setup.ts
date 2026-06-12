@@ -6,8 +6,10 @@ const window = page.mainFrame.window
 
 globalThis.window = window as unknown as Window & typeof globalThis
 globalThis.document = window.document
+globalThis.Event = window.Event
 globalThis.HTMLElement = window.HTMLElement
 globalThis.HTMLButtonElement = window.HTMLButtonElement
+globalThis.HTMLInputElement = window.HTMLInputElement
 globalThis.MutationObserver = window.MutationObserver
 globalThis.AbortController = window.AbortController
 globalThis.AbortSignal = window.AbortSignal
