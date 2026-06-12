@@ -70,6 +70,29 @@ describe('QuizHandlerRegistry', () => {
     expect(resolved).toBe(wordleHandler)
   })
 
+  it('resolves conexoes da liga by activeQuizType with league humans API', () => {
+    const conexoesHandler = createMockHandler({ type: QUIZ_TYPE.CONEXOES_DA_LIGA })
+    const registry = new QuizHandlerRegistry([conexoesHandler])
+
+    const resolved = registry.resolve(
+      MESSAGE_TYPE.GET_LEAGUE_HUMANS_FOR_MINIGAME,
+      quizRoute,
+      QUIZ_TYPE.CONEXOES_DA_LIGA,
+    )
+
+    expect(resolved).toBe(conexoesHandler)
+  })
+
+  it('returns null when multiple league quizzes share the API and quiz type is unknown', () => {
+    const wordleHandler = createMockHandler({ type: QUIZ_TYPE.WORDLE_DA_LIGA })
+    const conexoesHandler = createMockHandler({ type: QUIZ_TYPE.CONEXOES_DA_LIGA })
+    const registry = new QuizHandlerRegistry([wordleHandler, conexoesHandler])
+
+    const resolved = registry.resolve(MESSAGE_TYPE.GET_LEAGUE_HUMANS_FOR_MINIGAME, quizRoute)
+
+    expect(resolved).toBeNull()
+  })
+
   it('resolves artilheiro da rodada by activeQuizType with top scorers API', () => {
     const topScorersHandler = createMockHandler({ type: QUIZ_TYPE.ARTILHEIRO_DA_RODADA })
     const registry = new QuizHandlerRegistry([topScorersHandler])

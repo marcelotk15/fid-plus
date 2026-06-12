@@ -1,5 +1,6 @@
 import { QuizHandlerRegistry } from '~/modules/quiz/registry'
 
+import { conexoesDaLigaHandler } from './conexoes-da-liga.handler'
 import { qualECamisaHandler } from './qual-e-a-camisa.handler'
 import { quemEQuemHandler } from './quem-e-quem.handler'
 import { squadWordleHandler } from './squad-wordle.handler'
@@ -14,4 +15,5 @@ export const quizHandlerRegistry = new QuizHandlerRegistry([
   stadiumsHandler,
   topScorersHandler,
   wordleDaLigaHandler,
+  conexoesDaLigaHandler,
 ])

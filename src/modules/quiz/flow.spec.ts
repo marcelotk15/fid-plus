@@ -115,6 +115,28 @@ describe('readModalQuizType', () => {
     expect(quizType).toBe(QUIZ_TYPE.WORDLE_DA_LIGA)
   })
 
+  it('infers conexoes da liga from the mesmo clube objective when title is unknown', async () => {
+    const titleElement = document.createElement('h2')
+    titleElement.textContent = 'Minigame'
+
+    document.body.innerHTML = `
+      <div role="dialog">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-muted-foreground">Selecione 4 do MESMO clube</span>
+        </div>
+      </div>
+    `
+
+    const ctx = createMockContext({
+      document,
+      waitForElement: vi.fn(async () => titleElement),
+    })
+
+    const quizType = await readModalQuizType(ctx)
+
+    expect(quizType).toBe(QUIZ_TYPE.CONEXOES_DA_LIGA)
+  })
+
   it('returns null and logs error when title is unknown', async () => {
     const titleElement = document.createElement('h2')
     titleElement.textContent = 'Unknown Quiz'

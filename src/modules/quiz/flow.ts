@@ -24,6 +24,14 @@ function resolveQuizTypeFromTitle(title: string): QuizType | null {
 }
 
 function inferQuizTypeFromQuestion(ctx: QuizHandlerContext): QuizType | null {
+  const sameClubObjective = Array.from(
+    ctx.document.querySelectorAll('[role="dialog"] span.text-muted-foreground'),
+  ).find((element) => getTextContent(element).includes('mesmo clube'))
+
+  if (sameClubObjective) {
+    return QUIZ_TYPE.CONEXOES_DA_LIGA
+  }
+
   const wordleHint = Array.from(ctx.document.querySelectorAll('[role="dialog"] p.text-sm.font-medium')).find(
     (element) => getTextContent(element).includes('letras'),
   )

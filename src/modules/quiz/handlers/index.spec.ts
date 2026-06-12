@@ -31,6 +31,10 @@ describe('quizHandlerRegistry', () => {
     expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.WORDLE_DA_LIGA)).toBeDefined()
   })
 
+  it('registers the conexoes da liga handler', () => {
+    expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.CONEXOES_DA_LIGA)).toBeDefined()
+  })
+
   it('registers the artilheiro da rodada handler', () => {
     expect(quizHandlerRegistry.getByQuizType(QUIZ_TYPE.ARTILHEIRO_DA_RODADA)).toBeDefined()
   })
@@ -53,11 +57,11 @@ describe('quizHandlerRegistry', () => {
     expect(handlers[0]?.type).toBe(QUIZ_TYPE.TIME_ESTADIO)
   })
 
-  it('groups wordle da liga under the league humans API', () => {
+  it('groups league quizzes under the league humans API', () => {
     const handlers = quizHandlerRegistry.getByApiType(MESSAGE_TYPE.GET_LEAGUE_HUMANS_FOR_MINIGAME)
 
-    expect(handlers).toHaveLength(1)
-    expect(handlers[0]?.type).toBe(QUIZ_TYPE.WORDLE_DA_LIGA)
+    expect(handlers).toHaveLength(2)
+    expect(handlers.map((handler) => handler.type)).toEqual([QUIZ_TYPE.WORDLE_DA_LIGA, QUIZ_TYPE.CONEXOES_DA_LIGA])
   })
 
   it('groups artilheiro da rodada under the top scorers API', () => {
