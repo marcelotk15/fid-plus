@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": [".wxt/**", ".output/**", "node_modules/**"],
+  "ignorePatterns": [".github/**", "CHANGELOG.md", ".wxt/**", ".output/**", "node_modules/**"],
   "printWidth": 120,
   "singleQuote": true,
   "trailingComma": "all",
