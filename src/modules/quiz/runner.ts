@@ -80,7 +80,6 @@ export class QuizRunner {
     this.abortController = null
     this.active = false
     this.currentRoute = null
-    this.solving = false
     this.solvedRoundKey = null
     this.activeQuizType = null
     this.solveQueue.length = 0
@@ -166,7 +165,6 @@ export class QuizRunner {
     if (!this.active || !this.currentRoute || this.cachedProgressInFlight) return
 
     this.cachedProgressInFlight = true
-    this.solving = true
 
     try {
       logger.info('progressing cached quiz', { type: handler.type })
@@ -179,7 +177,6 @@ export class QuizRunner {
       })
     } finally {
       this.cachedProgressInFlight = false
-      this.solving = false
     }
   }
 
@@ -210,8 +207,6 @@ export class QuizRunner {
       return
     }
 
-    this.solving = true
-
     try {
       logger.info('solving quiz', { type: handler.type, roundKey })
 
@@ -223,8 +218,6 @@ export class QuizRunner {
         type: handler.type,
         error: error instanceof Error ? error.message : String(error),
       })
-    } finally {
-      this.solving = false
     }
   }
 
