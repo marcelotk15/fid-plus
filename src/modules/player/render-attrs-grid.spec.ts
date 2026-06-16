@@ -1,12 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { ATTRIBUTE_GROUPS } from '~/modules/player/constants'
-import {
-  ATTRS_GRID_SELECTOR,
-  isExtensionAttrsGrid,
-  renderAttrsGrid,
-} from '~/modules/player/render-attrs-grid'
 import type { PlayerAttributes } from '~/modules/player/types'
+
+import { ATTRIBUTE_GROUPS } from '~/modules/player/constants'
+import { ATTRS_GRID_SELECTOR, isExtensionAttrsGrid, renderAttrsGrid } from '~/modules/player/render-attrs-grid'
 
 const sampleAttributes: PlayerAttributes = {
   id: '5a12d99f-9520-4867-9cbc-f0d144e3c234',

@@ -1,14 +1,17 @@
 import type { RouteChangePayload } from '~/entrypoints/content'
+import type { PlayerAttributes } from '~/modules/player/types'
 
 import { logger } from '~/modules/logger'
-import { findMainContainer, insertAttrsGridBetweenFirstDivs, restoreLayout, waitForInsertPoint, waitForMainContainer, watchLayoutFix } from '~/modules/player/layout'
 import {
-  ATTRS_GRID_SELECTOR,
-  isExtensionAttrsGrid,
-  renderAttrsGrid,
-} from '~/modules/player/render-attrs-grid'
+  findMainContainer,
+  insertAttrsGridBetweenFirstDivs,
+  restoreLayout,
+  waitForInsertPoint,
+  waitForMainContainer,
+  watchLayoutFix,
+} from '~/modules/player/layout'
+import { ATTRS_GRID_SELECTOR, isExtensionAttrsGrid, renderAttrsGrid } from '~/modules/player/render-attrs-grid'
 import { getPlayerProfileId } from '~/modules/player/routes'
-import type { PlayerAttributes } from '~/modules/player/types'
 import { MESSAGE_SOURCE, MESSAGE_TYPE } from '~/modules/shared/consts'
 
 type PlayerAttributesMessage = {

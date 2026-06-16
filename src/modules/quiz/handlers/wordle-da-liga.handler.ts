@@ -90,10 +90,7 @@ export class WordleDaLigaHandler extends BaseQuizHandler<LeagueHumanForMinigame[
     return fullName.split(/\s+/)[0] ?? fullName
   }
 
-  private findTargetPlayer(
-    players: LeagueHumanForMinigame[],
-    hint: WordleDaLigaHint,
-  ): LeagueHumanForMinigame | null {
+  private findTargetPlayer(players: LeagueHumanForMinigame[], hint: WordleDaLigaHint): LeagueHumanForMinigame | null {
     const normalizedClubName = normalizeText(hint.clubName)
     const normalizedPosition = normalizeText(hint.position)
 

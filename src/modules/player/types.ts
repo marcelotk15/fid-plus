@@ -41,7 +41,4 @@ export interface PlayerAttributes {
   updated_at: string
 }
 
-export type AttributeKey = keyof Omit<
-  PlayerAttributes,
-  'id' | 'player_profile_id' | 'created_at' | 'updated_at'
->
+export type AttributeKey = keyof Omit<PlayerAttributes, 'id' | 'player_profile_id' | 'created_at' | 'updated_at'>

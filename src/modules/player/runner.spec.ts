@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { waitForAssertion } from '~tests/helpers/wait-for'
 
-import { PlayerProfileRunner } from '~/modules/player/runner'
-import { ATTRS_GRID_SELECTOR } from '~/modules/player/render-attrs-grid'
 import type { PlayerAttributes } from '~/modules/player/types'
+
+import { ATTRS_GRID_SELECTOR } from '~/modules/player/render-attrs-grid'
+import { PlayerProfileRunner } from '~/modules/player/runner'
 import { MESSAGE_SOURCE, MESSAGE_TYPE } from '~/modules/shared/consts'
 
 vi.mock('~/modules/logger', () => ({

@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
 import { createMockContext } from '~tests/mocks/handler-context'
 import { createSquadHuman } from '~tests/mocks/squad-human'
 
@@ -13,13 +12,7 @@ function buildDialogDom(options: {
   jerseyNumber?: number
   positions?: string[]
 }) {
-  const {
-    current = 1,
-    total = 1,
-    playerName = 'John Doe',
-    jerseyNumber = 10,
-    positions = ['GK', 'ST'],
-  } = options
+  const { current = 1, total = 1, playerName = 'John Doe', jerseyNumber = 10, positions = ['GK', 'ST'] } = options
 
   document.body.innerHTML = `
     <div role="dialog">

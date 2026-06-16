@@ -8,29 +8,11 @@ export type AttributeGroup = {
 export const ATTRIBUTE_GROUPS: AttributeGroup[] = [
   {
     title: 'Físico',
-    keys: [
-      'velocidade',
-      'aceleracao',
-      'agilidade',
-      'forca',
-      'equilibrio',
-      'resistencia',
-      'pulo',
-      'stamina',
-    ],
+    keys: ['velocidade', 'aceleracao', 'agilidade', 'forca', 'equilibrio', 'resistencia', 'pulo', 'stamina'],
   },
   {
     title: 'Técnico',
-    keys: [
-      'drible',
-      'controle_bola',
-      'marcacao',
-      'desarme',
-      'um_toque',
-      'curva',
-      'passe_baixo',
-      'passe_alto',
-    ],
+    keys: ['drible', 'controle_bola', 'marcacao', 'desarme', 'um_toque', 'curva', 'passe_baixo', 'passe_alto'],
   },
   {
     title: 'Mental',

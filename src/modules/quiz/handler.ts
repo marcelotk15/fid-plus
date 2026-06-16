@@ -62,11 +62,7 @@ export abstract class BaseQuizHandler<TData = unknown> implements QuizHandler<TD
     return items
   }
 
-  protected async clickOptionByText(
-    ctx: QuizHandlerContext,
-    optionsSelector: string,
-    text: string,
-  ): Promise<void> {
+  protected async clickOptionByText(ctx: QuizHandlerContext, optionsSelector: string, text: string): Promise<void> {
     await ctx.waitForElement(optionsSelector)
 
     const matches = findElementsByText(ctx.document, optionsSelector, text)

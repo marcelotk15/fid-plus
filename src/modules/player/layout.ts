@@ -66,9 +66,7 @@ export function findMainContainer(root: ParentNode = document): Element | null {
   }
 
   return (
-    root.querySelector('.space-y-6.max-w-2xl') ??
-    root.querySelector('.max-w-2xl') ??
-    root.querySelector('.space-y-6')
+    root.querySelector('.space-y-6.max-w-2xl') ?? root.querySelector('.max-w-2xl') ?? root.querySelector('.space-y-6')
   )
 }
 
@@ -138,10 +136,7 @@ export function hasInsertPoint(container: Element): boolean {
   return getDirectChildDivs(container).length >= 2
 }
 
-export function waitForInsertPoint(
-  container: Element,
-  options: WaitForElementOptions = {},
-): Promise<void> {
+export function waitForInsertPoint(container: Element, options: WaitForElementOptions = {}): Promise<void> {
   const { signal, timeout = INSERT_POINT_TIMEOUT_MS } = options
 
   if (hasInsertPoint(container)) {

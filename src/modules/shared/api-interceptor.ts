@@ -3,11 +3,7 @@ import type { RouteChangePayload } from '~/entrypoints/content'
 import { logger } from '~/modules/logger'
 import { getPlayerProfileId, isPlayerProfileRoute } from '~/modules/player/routes'
 import { isQuizRoute } from '~/modules/quiz/routes'
-import {
-  MESSAGE_SOURCE,
-  MESSAGE_TYPE,
-  SUPABASE,
-} from '~/modules/shared/consts'
+import { MESSAGE_SOURCE, MESSAGE_TYPE, SUPABASE } from '~/modules/shared/consts'
 
 const QUIZ_ALLOWED_REQUESTS = [
   MESSAGE_TYPE.GET_SQUAD_HUMANS_FOR_MINIGAME,
@@ -44,8 +40,7 @@ export function isQuizRequest(url: string): boolean {
   const parsedUrl = parseSupabaseUrl(url)
 
   return (
-    parsedUrl.origin === SUPABASE.BASE_URL &&
-    QUIZ_ALLOWED_REQUESTS.some((path) => parsedUrl.pathname.startsWith(path))
+    parsedUrl.origin === SUPABASE.BASE_URL && QUIZ_ALLOWED_REQUESTS.some((path) => parsedUrl.pathname.startsWith(path))
   )
 }
 

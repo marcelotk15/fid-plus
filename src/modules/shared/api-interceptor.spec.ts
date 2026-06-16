@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
+import { isPlayerProfileRoute } from '~/modules/player/routes'
+import { isQuizRoute } from '~/modules/quiz/routes'
 import {
   handleRouteChange,
   isPlayerAttributesRequest,
@@ -8,8 +10,6 @@ import {
   resetApiInterceptorState,
 } from '~/modules/shared/api-interceptor'
 import { MESSAGE_TYPE, SUPABASE } from '~/modules/shared/consts'
-import { isQuizRoute } from '~/modules/quiz/routes'
-import { isPlayerProfileRoute } from '~/modules/player/routes'
 
 const PLAYER_ID = 'c5075e8e-e5cc-455d-a566-7b1cacb2341b'
 
