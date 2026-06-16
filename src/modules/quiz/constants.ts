@@ -1,7 +1,5 @@
 import { MESSAGE_TYPE } from '~/modules/shared/consts'
 
-export const QUIZ_PATH_PREFIX = '/player/quiz'
-
 export const QUIZ_TYPE = {
   SQUAD_WORDLE: 'Squad Wordle',
   QUAL_E_A_CAMISA: 'Qual é a Camisa?',

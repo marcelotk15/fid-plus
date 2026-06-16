@@ -4,9 +4,9 @@ import type { QuizHandlerRegistry } from '~/modules/quiz/registry'
 import type { ApiMessageType, QuizType } from '~/modules/quiz/types'
 
 import { logger } from '~/modules/logger'
-import { QUIZ_PATH_PREFIX } from '~/modules/quiz/constants'
 import { readModalQuizType } from '~/modules/quiz/flow'
 import { isCachedQuizHandler } from '~/modules/quiz/handler'
+import { isQuizRoute } from '~/modules/quiz/routes'
 import { MESSAGE_SOURCE } from '~/modules/shared/consts'
 import { waitForElement } from '~/modules/shared/dom'
 
@@ -34,7 +34,7 @@ export class QuizRunner {
   constructor(private readonly registry: QuizHandlerRegistry) {}
 
   onRouteChange(route: RouteChangePayload): void {
-    if (!this.isQuizRoute(route.pathname)) {
+    if (!isQuizRoute(route.pathname)) {
       if (this.active) {
         logger.info('leaving quiz route')
         this.resetState()
@@ -226,10 +226,6 @@ export class QuizRunner {
     } finally {
       this.solving = false
     }
-  }
-
-  private isQuizRoute(pathname: string): boolean {
-    return pathname.startsWith(QUIZ_PATH_PREFIX)
   }
 
   private isQuizContentMessage(data: unknown): data is QuizContentMessage {
