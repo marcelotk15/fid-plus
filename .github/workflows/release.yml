@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "fid-plus-v*"
+      - "v*"
 
 permissions:
   contents: write
