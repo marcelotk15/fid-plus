@@ -46,7 +46,7 @@ export class BrowserLoggerService implements LoggerService {
       type,
       message,
       timestamp,
-      metadata: metadata ?? null
+      metadata: metadata ?? null,
     }
 
     const consoleMethod = type === 'error' ? console.error : console.info
@@ -63,7 +63,7 @@ export class BrowserLoggerService implements LoggerService {
     }
 
     consoleMethod(`%c${formattedMessage}`, config.badgeStyle, {
-      timestamp
+      timestamp,
     })
   }
 
@@ -73,18 +73,18 @@ export class BrowserLoggerService implements LoggerService {
     if (type === 'error') {
       return {
         badgeStyle: [...baseStyle, 'background: #dc2626'].join(';'),
-        labelStyle: 'color: #dc2626; font-weight: bold'
+        labelStyle: 'color: #dc2626; font-weight: bold',
       }
     }
 
     return {
       badgeStyle: [...baseStyle, 'background: #2563eb'].join(';'),
-      labelStyle: 'color: #2563eb; font-weight: bold'
+      labelStyle: 'color: #2563eb; font-weight: bold',
     }
   }
 }
 
 export const logger = new BrowserLoggerService({
   appName: APP_NAME,
-  enabled: true
+  enabled: true,
 })

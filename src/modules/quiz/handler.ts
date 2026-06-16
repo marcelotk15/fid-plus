@@ -2,7 +2,7 @@ import type { RouteChangePayload } from '~/entrypoints/content'
 import type { QuizType } from '~/modules/quiz/types'
 
 import { logger } from '~/modules/logger'
-import { QUIZ_PATH_PREFIX } from '~/modules/quiz/constants'
+import { isQuizRoute } from '~/modules/quiz/routes'
 import { clickElement, findElementsByText } from '~/modules/shared/dom'
 import { getTextContent } from '~/modules/shared/text'
 
@@ -41,7 +41,7 @@ export abstract class BaseQuizHandler<TData = unknown> implements QuizHandler<TD
   abstract readonly type: QuizType
 
   matchesRoute(route: RouteChangePayload): boolean {
-    return route.pathname.startsWith(QUIZ_PATH_PREFIX)
+    return isQuizRoute(route.pathname)
   }
 
   abstract parsePayload(body: unknown): TData | null
@@ -62,11 +62,7 @@ export abstract class BaseQuizHandler<TData = unknown> implements QuizHandler<TD
     return items
   }
 
-  protected async clickOptionByText(
-    ctx: QuizHandlerContext,
-    optionsSelector: string,
-    text: string,
-  ): Promise<void> {
+  protected async clickOptionByText(ctx: QuizHandlerContext, optionsSelector: string, text: string): Promise<void> {
     await ctx.waitForElement(optionsSelector)
 
     const matches = findElementsByText(ctx.document, optionsSelector, text)

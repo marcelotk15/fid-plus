@@ -93,7 +93,9 @@ export class StadiumsHandler extends BaseQuizHandler<StadiumForMinigame[]> {
 
   private readQuestionValueFromBox(questionBox: Element, mode: QuestionMode): string {
     if (mode === 'stadiumToClub') {
-      const stadiumElement = questionBox.querySelector(':scope > .font-display.font-semibold, :scope > p.font-display.font-semibold')
+      const stadiumElement = questionBox.querySelector(
+        ':scope > .font-display.font-semibold, :scope > p.font-display.font-semibold',
+      )
 
       return stadiumElement ? getTextContent(stadiumElement) : ''
     }

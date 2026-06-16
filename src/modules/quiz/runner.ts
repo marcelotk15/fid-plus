@@ -4,9 +4,9 @@ import type { QuizHandlerRegistry } from '~/modules/quiz/registry'
 import type { ApiMessageType, QuizType } from '~/modules/quiz/types'
 
 import { logger } from '~/modules/logger'
-import { QUIZ_PATH_PREFIX } from '~/modules/quiz/constants'
 import { readModalQuizType } from '~/modules/quiz/flow'
 import { isCachedQuizHandler } from '~/modules/quiz/handler'
+import { isQuizRoute } from '~/modules/quiz/routes'
 import { MESSAGE_SOURCE } from '~/modules/shared/consts'
 import { waitForElement } from '~/modules/shared/dom'
 
@@ -34,7 +34,7 @@ export class QuizRunner {
   constructor(private readonly registry: QuizHandlerRegistry) {}
 
   onRouteChange(route: RouteChangePayload): void {
-    if (!this.isQuizRoute(route.pathname)) {
+    if (!isQuizRoute(route.pathname)) {
       if (this.active) {
         logger.info('leaving quiz route')
         this.resetState()
@@ -80,7 +80,6 @@ export class QuizRunner {
     this.abortController = null
     this.active = false
     this.currentRoute = null
-    this.solving = false
     this.solvedRoundKey = null
     this.activeQuizType = null
     this.solveQueue.length = 0
@@ -166,7 +165,6 @@ export class QuizRunner {
     if (!this.active || !this.currentRoute || this.cachedProgressInFlight) return
 
     this.cachedProgressInFlight = true
-    this.solving = true
 
     try {
       logger.info('progressing cached quiz', { type: handler.type })
@@ -179,7 +177,6 @@ export class QuizRunner {
       })
     } finally {
       this.cachedProgressInFlight = false
-      this.solving = false
     }
   }
 
@@ -210,8 +207,6 @@ export class QuizRunner {
       return
     }
 
-    this.solving = true
-
     try {
       logger.info('solving quiz', { type: handler.type, roundKey })
 
@@ -223,13 +218,7 @@ export class QuizRunner {
         type: handler.type,
         error: error instanceof Error ? error.message : String(error),
       })
-    } finally {
-      this.solving = false
     }
-  }
-
-  private isQuizRoute(pathname: string): boolean {
-    return pathname.startsWith(QUIZ_PATH_PREFIX)
   }
 
   private isQuizContentMessage(data: unknown): data is QuizContentMessage {

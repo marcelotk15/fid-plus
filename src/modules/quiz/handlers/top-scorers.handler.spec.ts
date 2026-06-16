@@ -103,9 +103,7 @@ describe('TopScorersHandler', () => {
     it('stores payload by season_round key from the first item', async () => {
       buildDom({ current: 1, total: 1, roundNumber: 6, seasonNumber: 1 })
 
-      const payload = [
-        createTopScorer({ full_name: 'Edónho', total_goals: 3, round_number: 6, season_number: 1 }),
-      ]
+      const payload = [createTopScorer({ full_name: 'Edónho', total_goals: 3, round_number: 6, season_number: 1 })]
 
       handler.storePayload(payload)
 
@@ -142,7 +140,9 @@ describe('TopScorersHandler', () => {
     it('returns early when round data is not cached yet', async () => {
       buildDom({ current: 1, total: 2, roundNumber: 6, seasonNumber: 1 })
 
-      handler.storePayload([createTopScorer({ full_name: 'Edónho', total_goals: 3, round_number: 7, season_number: 1 })])
+      handler.storePayload([
+        createTopScorer({ full_name: 'Edónho', total_goals: 3, round_number: 7, season_number: 1 }),
+      ])
 
       const button = document.querySelector('[role="dialog"] .space-y-2 button') as HTMLButtonElement
       const clickSpy = vi.spyOn(button, 'click')
