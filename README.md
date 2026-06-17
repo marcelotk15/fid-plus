@@ -2,8 +2,13 @@
   <img src="public/icon.png" alt="FID Plus" width="128">
 </p>
 
-[![CI](https://github.com/marcelotk15/fid-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelotk15/fid-plus/actions/workflows/ci.yml)
-[![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/hgonnokjmaapkalomekndnmldglhacgd?label=chrome%20web%20store)](https://chromewebstore.google.com/detail/hgonnokjmaapkalomekndnmldglhacgd)
+[![CI][ci badge]] [![Build][build badge]][build link] [![Chrome Web Store][chrome web store badge]][chrome web store link]
+
+[ci badge]: https://flat.badgen.net/circleci/github/marcelotk15/fid-plus/main?label=build
+[build badge]: https://flat.badgen.net/circleci/github/marcelotk15/fid-plus/main?label=build
+[build link]: https://circleci.com/gh/marcelotk15/fid-plus/tree/main
+[chrome web store badge]: https://flat.badgen.net//chrome-web-store/v/hgonnokjmaapkalomekndnmldglhacgd
+[chrome web store link]: https://chromewebstore.google.com/detail/fid-plus/hgonnokjmaapkalomekndnmldglhacgd
 
 # FID Plus
 
