@@ -1,6 +1,6 @@
 {
   "name": "fid-plus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Improve some features of FID (Football Identity) extension",
   "type": "module",

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/marcelotk15/fid-plus/compare/v0.1.0...v0.1.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* test release pipeline ([191ea93](https://github.com/marcelotk15/fid-plus/commit/191ea93db009c7b935a0b4e8bca0c1fa853b81e7))
+* test release pipeline ([d5e75a6](https://github.com/marcelotk15/fid-plus/commit/d5e75a6545779cf8f99ad6643e0a2870021b2582))
+
 ## [0.1.0](https://github.com/marcelotk15/fid-plus/compare/fid-plus-v0.0.1...fid-plus-v0.1.0) (2026-06-16)
 
 
