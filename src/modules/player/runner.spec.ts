@@ -88,6 +88,14 @@ function createPlayerAttributesMessage(
 }
 
 describe('PlayerProfileRunner', () => {
+  const runners: PlayerProfileRunner[] = []
+
+  const createRunner = () => {
+    const runner = new PlayerProfileRunner()
+    runners.push(runner)
+    return runner
+  }
+
   beforeEach(() => {
     document.body.innerHTML = `
       <main class="flex-1 overflow-auto p-3 sm:p-4 md:p-6">
@@ -100,11 +108,16 @@ describe('PlayerProfileRunner', () => {
   })
 
   afterEach(() => {
+    for (const runner of runners) {
+      runner.dispose()
+    }
+
+    runners.length = 0
     document.body.innerHTML = ''
   })
 
   it('does not process messages before entering player profile route', async () => {
-    const runner = new PlayerProfileRunner()
+    const runner = createRunner()
 
     runner.onPlayerAttributes(createPlayerAttributesMessage())
 
@@ -114,7 +127,7 @@ describe('PlayerProfileRunner', () => {
   })
 
   it('removes max-w-2xl when entering player profile route', async () => {
-    const runner = new PlayerProfileRunner()
+    const runner = createRunner()
     const container = document.querySelector('main .space-y-6')
 
     runner.onRouteChange(playerRoute)
@@ -124,8 +137,36 @@ describe('PlayerProfileRunner', () => {
     })
   })
 
+  it('removes max-w-2xl after SPA navigation updates the DOM', async () => {
+    document.body.innerHTML = `
+      <main class="flex-1">
+        <div class="space-y-6 max-w-2xl">
+          <div class="home-section">Home</div>
+        </div>
+      </main>
+    `
+
+    const runner = createRunner()
+    runner.onRouteChange(playerRoute)
+
+    setTimeout(() => {
+      const main = document.querySelector('main')!
+      main.innerHTML = `
+        <div class="space-y-6 max-w-2xl">
+          <div class="first-section">Header</div>
+          <div class="second-section">Other</div>
+        </div>
+      `
+    }, 10)
+
+    await waitForAssertion(() => {
+      const container = document.querySelector('main .space-y-6')
+      expect(container?.classList.contains('max-w-2xl')).toBe(false)
+    })
+  })
+
   it('renders attributes grid from intercepted payload', async () => {
-    const runner = new PlayerProfileRunner()
+    const runner = createRunner()
 
     runner.onRouteChange(playerRoute)
     runner.onPlayerAttributes(createPlayerAttributesMessage())
@@ -138,7 +179,7 @@ describe('PlayerProfileRunner', () => {
   })
 
   it('inserts attributes grid between the first two child divs', async () => {
-    const runner = new PlayerProfileRunner()
+    const runner = createRunner()
 
     runner.onRouteChange(playerRoute)
     runner.onPlayerAttributes(createPlayerAttributesMessage())
@@ -156,7 +197,7 @@ describe('PlayerProfileRunner', () => {
   })
 
   it('ignores payload when profile id does not match route', async () => {
-    const runner = new PlayerProfileRunner()
+    const runner = createRunner()
 
     runner.onRouteChange(playerRoute)
     runner.onPlayerAttributes(
@@ -171,7 +212,7 @@ describe('PlayerProfileRunner', () => {
   })
 
   it('restores layout when leaving player profile route', async () => {
-    const runner = new PlayerProfileRunner()
+    const runner = createRunner()
     const container = document.querySelector('main .space-y-6')
 
     runner.onRouteChange(playerRoute)

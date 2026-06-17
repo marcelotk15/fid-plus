@@ -8,6 +8,7 @@ import {
   restoreLayout,
   waitForInsertPoint,
   waitForMainContainer,
+  waitForRouteDomUpdate,
   watchLayoutFix,
 } from '~/modules/player/layout'
 import { ATTRS_GRID_SELECTOR, isExtensionAttrsGrid, renderAttrsGrid } from '~/modules/player/render-attrs-grid'
@@ -120,7 +121,18 @@ export class PlayerProfileRunner {
 
   private async prepareLayout(signal: AbortSignal): Promise<void> {
     try {
+      await waitForRouteDomUpdate({ signal })
+
+      if (signal.aborted || !this.active) {
+        return
+      }
+
       await this.ensureMainContainer(signal)
+
+      if (signal.aborted || !this.active) {
+        return
+      }
+
       this.startLayoutFix(signal)
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {

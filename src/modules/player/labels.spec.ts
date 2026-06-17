@@ -38,7 +38,7 @@ describe('getAttributeLabel', () => {
   it('returns Bom for values between 60 and 74', () => {
     expect(getAttributeLabel(70)).toEqual({
       label: 'Bom',
-      barClass: 'bg-success',
+      barClass: 'bg-green-400',
       textClass: 'text-green-400',
     })
   })

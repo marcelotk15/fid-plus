@@ -2,7 +2,20 @@ import type { WaitForElementOptions } from '~/modules/shared/dom'
 
 const MAIN_CONTAINER_TIMEOUT_MS = 30_000
 const INSERT_POINT_TIMEOUT_MS = 30_000
+const ROUTE_DOM_SETTLE_MS = 50
+const ROUTE_DOM_FALLBACK_MS = 500
 const MAX_WIDTH_CLASS = 'max-w-2xl'
+
+function scheduleAfterPaint(callback: () => void): void {
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(callback)
+    })
+    return
+  }
+
+  setTimeout(callback, 0)
+}
 
 function stripMaxWidthClass(element: Element): boolean {
   if (!(element instanceof HTMLElement)) return false
@@ -68,6 +81,78 @@ export function findMainContainer(root: ParentNode = document): Element | null {
   return (
     root.querySelector('.space-y-6.max-w-2xl') ?? root.querySelector('.max-w-2xl') ?? root.querySelector('.space-y-6')
   )
+}
+
+export function waitForRouteDomUpdate(options: WaitForElementOptions = {}): Promise<void> {
+  const { signal, timeout = ROUTE_DOM_FALLBACK_MS, root = document } = options
+
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'))
+      return
+    }
+
+    let observer: MutationObserver | undefined
+    let settleTimer: ReturnType<typeof setTimeout> | undefined
+    let fallbackTimer: ReturnType<typeof setTimeout> | undefined
+    let settled = false
+
+    const cleanup = () => {
+      observer?.disconnect()
+      signal?.removeEventListener('abort', onAbort)
+
+      if (settleTimer !== undefined) {
+        clearTimeout(settleTimer)
+      }
+
+      if (fallbackTimer !== undefined) {
+        clearTimeout(fallbackTimer)
+      }
+    }
+
+    const resolveOnce = () => {
+      if (settled) return
+
+      settled = true
+      cleanup()
+      resolve()
+    }
+
+    const onAbort = () => {
+      if (settled) return
+
+      settled = true
+      cleanup()
+      reject(new DOMException('Aborted', 'AbortError'))
+    }
+
+    const scheduleSettle = () => {
+      if (settleTimer !== undefined) {
+        clearTimeout(settleTimer)
+      }
+
+      settleTimer = setTimeout(resolveOnce, ROUTE_DOM_SETTLE_MS)
+    }
+
+    const observeTarget = root === document ? document.documentElement : (root as Element)
+
+    observer = new MutationObserver(() => {
+      scheduleSettle()
+    })
+
+    signal?.addEventListener('abort', onAbort, { once: true })
+
+    observer.observe(observeTarget, {
+      childList: true,
+      subtree: true,
+    })
+
+    scheduleAfterPaint(() => {
+      scheduleSettle()
+    })
+
+    fallbackTimer = setTimeout(resolveOnce, timeout)
+  })
 }
 
 export function waitForMainContainer(options: WaitForElementOptions = {}): Promise<Element> {
@@ -212,17 +297,13 @@ export function watchLayoutFix(root: ParentNode = document, signal?: AbortSignal
 
   strip()
 
-  const main = root.querySelector('main') ?? root.querySelector('[role="main"]')
-
-  if (!main) {
-    return () => undefined
-  }
+  const observeTarget = root === document ? document.documentElement : (root as Element)
 
   const observer = new MutationObserver(() => {
     strip()
   })
 
-  observer.observe(main, {
+  observer.observe(observeTarget, {
     subtree: true,
     attributes: true,
     attributeFilter: ['class'],

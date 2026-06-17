@@ -22,7 +22,7 @@ export function getAttributeLabel(value: number): AttributeLabelResult {
   }
 
   if (value < 75) {
-    return { label: 'Bom', barClass: 'bg-success', textClass: 'text-green-400' }
+    return { label: 'Bom', barClass: 'bg-green-400', textClass: 'text-green-400' }
   }
 
   if (value < 90) {

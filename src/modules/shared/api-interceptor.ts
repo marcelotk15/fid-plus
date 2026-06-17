@@ -12,6 +12,8 @@ const QUIZ_ALLOWED_REQUESTS = [
   MESSAGE_TYPE.GET_TOP_SCORERS_FOR_MINIGAME,
 ].map((path) => `${SUPABASE.RPC_PATH_PREFIX}/${path}`)
 
+const AUTHORIZATION_HEADER = 'authorization'
+
 let originalFetch: typeof globalThis.fetch | null = null
 let activePlayerProfileId: string | null = null
 let activePathname = ''
@@ -65,6 +67,36 @@ export function isTargetRequest(url: string, pathname = activePathname): boolean
   }
 
   return false
+}
+
+function collectRequestHeaders(input: RequestInfo | URL, init?: RequestInit): Headers {
+  const headers = new Headers()
+
+  if (input instanceof Request) {
+    input.headers.forEach((value, key) => {
+      headers.set(key, value)
+    })
+  }
+
+  new Headers(init?.headers).forEach((value, key) => {
+    headers.set(key, value)
+  })
+
+  return headers
+}
+
+export function preparePlayerAttributesFetch(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): [RequestInfo | URL, RequestInit | undefined] {
+  const headers = collectRequestHeaders(input, init)
+  headers.delete(AUTHORIZATION_HEADER)
+
+  if (input instanceof Request) {
+    return [new Request(input, { headers }), undefined]
+  }
+
+  return [input, { ...init, headers }]
 }
 
 async function readResponseBody(response: Response) {
@@ -138,8 +170,10 @@ export function setupFetchInterceptor() {
   globalThis.fetch = async (input, init) => {
     const url = normalizeUrl(input)
     const shouldIntercept = isTargetRequest(url)
+    const isPlayerAttrs = isPlayerAttributesRequest(url)
+    const [fetchInput, fetchInit] = isPlayerAttrs ? preparePlayerAttributesFetch(input, init) : [input, init]
 
-    const response = await fetchImpl(input, init)
+    const response = await fetchImpl(fetchInput, fetchInit)
 
     if (shouldIntercept) {
       void publishResponse(url, response)
