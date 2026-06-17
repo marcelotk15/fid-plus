@@ -7,11 +7,7 @@
       "include-component-in-tag": false,
       "include-v-in-tag": true,
       "bump-minor-pre-major": true,
-      "exclude-commits-from-changelog": [
-        "merge conflict",
-        "Merge pull request",
-        "Merge branch"
-      ],
+      "exclude-commits-from-changelog": ["merge conflict", "Merge pull request", "Merge branch"],
       "changelog-sections": [
         {
           "type": "feat",
