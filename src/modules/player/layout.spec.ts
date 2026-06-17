@@ -8,6 +8,7 @@ import {
   restoreLayout,
   waitForInsertPoint,
   waitForMainContainer,
+  waitForRouteDomUpdate,
   watchLayoutFix,
 } from '~/modules/player/layout'
 
@@ -64,6 +65,33 @@ describe('findMainContainer', () => {
     document.body.innerHTML = `<main class="profile-main"></main>`
 
     expect(findMainContainer()?.classList.contains('profile-main')).toBe(true)
+  })
+})
+
+describe('waitForRouteDomUpdate', () => {
+  beforeEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  it('resolves after DOM mutations settle', async () => {
+    const promise = waitForRouteDomUpdate({ timeout: 1_000 })
+
+    setTimeout(() => {
+      document.body.innerHTML = `<main><div>content</div></main>`
+    }, 10)
+
+    await promise
+
+    expect(document.querySelector('main')).not.toBeNull()
+  })
+
+  it('rejects when aborted', async () => {
+    const controller = new AbortController()
+    const promise = waitForRouteDomUpdate({ signal: controller.signal, timeout: 1_000 })
+
+    controller.abort()
+
+    await expect(promise).rejects.toMatchObject({ name: 'AbortError' })
   })
 })
 
@@ -138,6 +166,28 @@ describe('watchLayoutFix', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(container.classList.contains('max-w-2xl')).toBe(false)
+
+    cleanup()
+  })
+
+  it('removes max-w-2xl when main element is replaced', async () => {
+    document.body.innerHTML = `
+      <main>
+        <div class="space-y-6 max-w-2xl"></div>
+      </main>
+    `
+
+    const cleanup = watchLayoutFix()
+    const oldMain = document.querySelector('main')!
+
+    const newMain = document.createElement('main')
+    newMain.innerHTML = `<div class="space-y-6 max-w-2xl"></div>`
+    oldMain.replaceWith(newMain)
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    const container = newMain.querySelector('.space-y-6')
+    expect(container?.classList.contains('max-w-2xl')).toBe(false)
 
     cleanup()
   })
