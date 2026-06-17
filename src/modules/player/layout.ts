@@ -6,6 +6,17 @@ const ROUTE_DOM_SETTLE_MS = 50
 const ROUTE_DOM_FALLBACK_MS = 500
 const MAX_WIDTH_CLASS = 'max-w-2xl'
 
+function scheduleAfterPaint(callback: () => void): void {
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(callback)
+    })
+    return
+  }
+
+  setTimeout(callback, 0)
+}
+
 function stripMaxWidthClass(element: Element): boolean {
   if (!(element instanceof HTMLElement)) return false
   if (!element.classList.contains(MAX_WIDTH_CLASS)) return false
@@ -136,10 +147,8 @@ export function waitForRouteDomUpdate(options: WaitForElementOptions = {}): Prom
       subtree: true,
     })
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        scheduleSettle()
-      })
+    scheduleAfterPaint(() => {
+      scheduleSettle()
     })
 
     fallbackTimer = setTimeout(resolveOnce, timeout)
