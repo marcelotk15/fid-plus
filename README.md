@@ -2,10 +2,8 @@
   <img src="public/icon.png" alt="FID Plus" width="128">
 </p>
 
-<div style="text-align: center;">
 [![CI](https://github.com/marcelotk15/fid-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelotk15/fid-plus/actions/workflows/ci.yml)
 [![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/hgonnokjmaapkalomekndnmldglhacgd?label=chrome%20web%20store)](https://chromewebstore.google.com/detail/hgonnokjmaapkalomekndnmldglhacgd)
-<div>
 
 # FID Plus
 
