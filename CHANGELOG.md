@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.2](https://github.com/marcelotk15/fid-plus/compare/v0.1.1...v0.1.2) (2026-06-17)
+
+
+### Code Refactoring
+
+* add scheduleAfterPaint function for improved DOM update handling ([0f7f456](https://github.com/marcelotk15/fid-plus/commit/0f7f45698705c664b35f2b39f1f7072da5083c38))
+* update label classes and add new layout functions for improved DOM handling ([aaf7d0a](https://github.com/marcelotk15/fid-plus/commit/aaf7d0a06f446e5c344c3cb8dc1313a0014ab7c5))
+
+
+### Tests
+
+* add unit tests for preparePlayerAttributesFetch and setupFetchInterceptor ([10015de](https://github.com/marcelotk15/fid-plus/commit/10015dec7b02f41ff49733cb83a73f5955411f46))
+
 ## [0.1.1](https://github.com/marcelotk15/fid-plus/compare/v0.1.0...v0.1.1) (2026-06-17)
 
 
