@@ -9,6 +9,7 @@ permissions:
   contents: write
   pull-requests: write
 
+# Avoid duplicated release PRs when there are multiple pushes in a row on main
 concurrency:
   group: release-please-${{ github.ref }}
   cancel-in-progress: true
