@@ -2,11 +2,16 @@
   <img src="public/icon.png" alt="FID Plus" width="128">
 </p>
 
+<div style="text-align: center;">
+[![CI](https://github.com/marcelotk15/fid-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/marcelotk15/fid-plus/actions/workflows/ci.yml)
+[![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/hgonnokjmaapkalomekndnmldglhacgd?label=chrome%20web%20store)](https://chromewebstore.google.com/detail/hgonnokjmaapkalomekndnmldglhacgd)
+<div>
+
 # FID Plus
 
-Extensão de navegador que automatiza a resolução dos quizzes diários do [Football Identity](https://footballidentity.org). Funciona em páginas `*.footballidentity.org`, intercepta dados da API e executa handlers específicos para cada tipo de quiz.
+Extensão de navegador que melhora a experiência no [Football Identity](https://footballidentity.org) com funcionalidades e helpers extras. Evoluindo continuamente com novas ideias.
 
-Quizzes suportados: Qual é a camisa, Quem é quem, Squad Wordle, Estádios, Artilheiros, Wordle da Liga, Conexões da Liga e Quem joga no clube.
+Entre os recursos atuais: resolução automática dos quizzes diários (Qual é a camisa, Quem é quem, Squad Wordle, Estádios, Artilheiros, Wordle da Liga, Conexões da Liga e Quem joga no clube).
 
 ## Pré-requisitos
 
