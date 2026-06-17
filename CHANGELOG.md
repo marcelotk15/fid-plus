@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/marcelotk15/fid-plus/compare/v0.1.2...v0.1.3) (2026-06-17)
+
+
+### Code Refactoring
+
+* remove player profile module and related components for cod… ([69f45ca](https://github.com/marcelotk15/fid-plus/commit/69f45caa293e6ef7a9e31911bd559fed2d4c90e5))
+* remove player profile module and related components for code cleanup ([c8fc094](https://github.com/marcelotk15/fid-plus/commit/c8fc094a7f50bd75edc3d9f0434ea73463b7f791))
+
 ## [0.1.2](https://github.com/marcelotk15/fid-plus/compare/v0.1.1...v0.1.2) (2026-06-17)
 
 
