@@ -1,7 +1,6 @@
 import type { RouteChangePayload } from '~/entrypoints/content'
 
 import { logger } from '~/modules/logger'
-import { getPlayerProfileId, isPlayerProfileRoute } from '~/modules/player/routes'
 import { isQuizRoute } from '~/modules/quiz/routes'
 import { MESSAGE_SOURCE, MESSAGE_TYPE, SUPABASE } from '~/modules/shared/consts'
 
@@ -12,10 +11,7 @@ const QUIZ_ALLOWED_REQUESTS = [
   MESSAGE_TYPE.GET_TOP_SCORERS_FOR_MINIGAME,
 ].map((path) => `${SUPABASE.RPC_PATH_PREFIX}/${path}`)
 
-const AUTHORIZATION_HEADER = 'authorization'
-
 let originalFetch: typeof globalThis.fetch | null = null
-let activePlayerProfileId: string | null = null
 let activePathname = ''
 
 function parseSupabaseUrl(url: string): URL {
@@ -35,7 +31,7 @@ function normalizeUrl(input: RequestInfo | URL): string {
 }
 
 function isAllowedRoute(pathname = activePathname): boolean {
-  return isQuizRoute(pathname) || isPlayerProfileRoute(pathname)
+  return isQuizRoute(pathname)
 }
 
 export function isQuizRequest(url: string): boolean {
@@ -46,57 +42,12 @@ export function isQuizRequest(url: string): boolean {
   )
 }
 
-export function isPlayerAttributesRequest(url: string, playerProfileId = activePlayerProfileId): boolean {
-  if (!playerProfileId) return false
-
-  const parsedUrl = parseSupabaseUrl(url)
-
-  if (parsedUrl.origin !== SUPABASE.BASE_URL) return false
-  if (parsedUrl.pathname !== SUPABASE.PLAYER_ATTRIBUTES_PATH) return false
-
-  return parsedUrl.searchParams.get('player_profile_id') === `eq.${playerProfileId}`
-}
-
 export function isTargetRequest(url: string, pathname = activePathname): boolean {
   if (isQuizRoute(pathname)) {
     return isQuizRequest(url)
   }
 
-  if (isPlayerProfileRoute(pathname)) {
-    return isPlayerAttributesRequest(url)
-  }
-
   return false
-}
-
-function collectRequestHeaders(input: RequestInfo | URL, init?: RequestInit): Headers {
-  const headers = new Headers()
-
-  if (input instanceof Request) {
-    input.headers.forEach((value, key) => {
-      headers.set(key, value)
-    })
-  }
-
-  new Headers(init?.headers).forEach((value, key) => {
-    headers.set(key, value)
-  })
-
-  return headers
-}
-
-export function preparePlayerAttributesFetch(
-  input: RequestInfo | URL,
-  init?: RequestInit,
-): [RequestInfo | URL, RequestInit | undefined] {
-  const headers = collectRequestHeaders(input, init)
-  headers.delete(AUTHORIZATION_HEADER)
-
-  if (input instanceof Request) {
-    return [new Request(input, { headers }), undefined]
-  }
-
-  return [input, { ...init, headers }]
 }
 
 async function readResponseBody(response: Response) {
@@ -109,7 +60,7 @@ async function readResponseBody(response: Response) {
   return response.clone().text()
 }
 
-function getQuizMessageTypeFromUrl(url: string): (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE] | null {
+function getMessageTypeFromUrl(url: string): (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE] | null {
   const parsedUrl = parseSupabaseUrl(url)
 
   return (
@@ -122,22 +73,6 @@ function getQuizMessageTypeFromUrl(url: string): (typeof MESSAGE_TYPE)[keyof typ
   )
 }
 
-function getMessageTypeFromUrl(url: string): (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE] | null {
-  if (isPlayerAttributesRequest(url)) {
-    return MESSAGE_TYPE.PLAYER_ATTRIBUTES
-  }
-
-  return getQuizMessageTypeFromUrl(url)
-}
-
-function getMessageSourceFromUrl(url: string): (typeof MESSAGE_SOURCE)[keyof typeof MESSAGE_SOURCE] {
-  if (isPlayerAttributesRequest(url)) {
-    return MESSAGE_SOURCE.PLAYER_CONTENT
-  }
-
-  return MESSAGE_SOURCE.QUIZ_CONTENT
-}
-
 async function publishResponse(url: string, response: Response) {
   try {
     const body = await readResponseBody(response)
@@ -147,7 +82,7 @@ async function publishResponse(url: string, response: Response) {
     const messageType = getMessageTypeFromUrl(url)
 
     globalThis.postMessage({
-      source: getMessageSourceFromUrl(url),
+      source: MESSAGE_SOURCE.QUIZ_CONTENT,
       type: messageType,
       payload: {
         pageUrl: globalThis.location?.href ?? '',
@@ -170,10 +105,8 @@ export function setupFetchInterceptor() {
   globalThis.fetch = async (input, init) => {
     const url = normalizeUrl(input)
     const shouldIntercept = isTargetRequest(url)
-    const isPlayerAttrs = isPlayerAttributesRequest(url)
-    const [fetchInput, fetchInit] = isPlayerAttrs ? preparePlayerAttributesFetch(input, init) : [input, init]
 
-    const response = await fetchImpl(fetchInput, fetchInit)
+    const response = await fetchImpl(input, init)
 
     if (shouldIntercept) {
       void publishResponse(url, response)
@@ -192,23 +125,16 @@ export function cleanupFetchInterceptor() {
 
 export function handleRouteChange(payload: RouteChangePayload) {
   activePathname = payload.pathname
-  activePlayerProfileId = getPlayerProfileId(payload.pathname)
 
   if (isAllowedRoute(payload.pathname)) {
     setupFetchInterceptor()
     return
   }
 
-  activePlayerProfileId = null
   cleanupFetchInterceptor()
 }
 
-export function getActivePlayerProfileId(): string | null {
-  return activePlayerProfileId
-}
-
 export function resetApiInterceptorState(): void {
-  activePlayerProfileId = null
   activePathname = ''
   cleanupFetchInterceptor()
 }
