@@ -49,19 +49,12 @@ export function readDailyPackCache(storage: StorageLike): DailyPackCache | null 
   return parseCacheValue(raw)
 }
 
-export function saveDailyPackCache(
-  storage: StorageLike,
-  nextResetAt: string,
-  claimedToday: boolean,
-): void {
+export function saveDailyPackCache(storage: StorageLike, nextResetAt: string, claimedToday: boolean): void {
   const date = new Date(nextResetAt)
 
   if (Number.isNaN(date.getTime())) return
 
-  storage.setItem(
-    DAILY_PACK.CACHE_STORAGE_KEY,
-    JSON.stringify({ nextResetAt, claimedToday }),
-  )
+  storage.setItem(DAILY_PACK.CACHE_STORAGE_KEY, JSON.stringify({ nextResetAt, claimedToday }))
 }
 
 export function isDailyPackCacheValid(cache: DailyPackCache, now = new Date()): boolean {
