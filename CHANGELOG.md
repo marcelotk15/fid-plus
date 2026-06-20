@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.0](https://github.com/marcelotk15/fid-plus/compare/v0.1.3...v0.2.0) (2026-06-20)
+
+
+### Features
+
+* **daily-pack:** add session, cache, notification and content script ([ae27710](https://github.com/marcelotk15/fid-plus/commit/ae27710394f22a38f96ca2c50307c3eed356d734))
+* **shared:** add supabase auth token reader and storage types ([9145002](https://github.com/marcelotk15/fid-plus/commit/91450020f53d333d93638a9195bda09b4b468ad3))
+
+
+### Bug Fixes
+
+* update Edge binary path format in wxt.config.ts ([3653a46](https://github.com/marcelotk15/fid-plus/commit/3653a464d91597bd7d0566df3222bf84f2fb0652))
+
+
+### Code Refactoring
+
+* **format:** format the code ([8ec3b3d](https://github.com/marcelotk15/fid-plus/commit/8ec3b3db561fe21f1eccf97d71f9119d4b5d67f6))
+* **logger:** export LoggerService interface ([07dfb93](https://github.com/marcelotk15/fid-plus/commit/07dfb931f3480b21552a93da39da779f5f226172))
+* **shared:** replace api-interceptor with FetchInterceptor and rule registry ([3aee068](https://github.com/marcelotk15/fid-plus/commit/3aee068d84fbba8b1f1fca35cc2dd87e39d15343))
+
 ## [0.1.3](https://github.com/marcelotk15/fid-plus/compare/v0.1.2...v0.1.3) (2026-06-17)
 
 
