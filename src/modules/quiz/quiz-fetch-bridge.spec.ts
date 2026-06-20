@@ -1,25 +1,27 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { isQuizRoute } from '~/modules/quiz/routes'
 import {
   handleRouteChange,
   isQuizRequest,
   isTargetRequest,
-  resetApiInterceptorState,
-} from '~/modules/shared/api-interceptor'
+  QuizFetchInterceptRuleRunner,
+  resetQuizFetchBridgeState,
+} from '~/modules/quiz/quiz-fetch-bridge'
+import { isQuizRoute } from '~/modules/quiz/routes'
 import { MESSAGE_TYPE, SUPABASE } from '~/modules/shared/consts'
+import { FetchInterceptor } from '~/modules/shared/fetch-interceptor'
 
 function isAllowedRoute(pathname: string): boolean {
   return isQuizRoute(pathname)
 }
 
-describe('api-interceptor route matching', () => {
+describe('quiz-fetch-bridge route matching', () => {
   beforeEach(() => {
-    resetApiInterceptorState()
+    resetQuizFetchBridgeState()
   })
 
   afterEach(() => {
-    resetApiInterceptorState()
+    resetQuizFetchBridgeState()
   })
 
   it('allows quiz routes', () => {
@@ -29,13 +31,18 @@ describe('api-interceptor route matching', () => {
   })
 })
 
-describe('api-interceptor request matching', () => {
+describe('quiz-fetch-bridge request matching', () => {
+  let interceptor: FetchInterceptor
+
   beforeEach(() => {
-    resetApiInterceptorState()
+    resetQuizFetchBridgeState()
+    interceptor = new FetchInterceptor()
+    new QuizFetchInterceptRuleRunner().register(interceptor)
   })
 
   afterEach(() => {
-    resetApiInterceptorState()
+    resetQuizFetchBridgeState()
+    interceptor.reset()
   })
 
   it('matches quiz rpc requests on quiz route', () => {

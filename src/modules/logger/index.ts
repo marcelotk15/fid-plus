@@ -9,7 +9,7 @@ interface LoggerOptions {
   appName?: string
 }
 
-interface LoggerService {
+export interface LoggerService {
   info(message: string, metadata?: LogMetadata): void
   error(message: string, metadata?: LogMetadata): void
 }

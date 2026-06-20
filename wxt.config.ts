@@ -11,7 +11,7 @@ const iconMap = {
 export default defineConfig({
   webExt: {
     binaries: {
-      edge: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+      edge: String.raw`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`,
     },
   },
   srcDir: 'src',
