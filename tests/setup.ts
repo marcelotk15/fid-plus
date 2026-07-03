@@ -6,6 +6,8 @@ const window = page.mainFrame.window
 
 globalThis.window = window as unknown as Window & typeof globalThis
 globalThis.document = window.document as unknown as Document
+globalThis.localStorage = window.localStorage
+;(globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 globalThis.Event = window.Event as unknown as typeof Event
 globalThis.HTMLElement = window.HTMLElement as unknown as typeof HTMLElement
 globalThis.HTMLButtonElement = window.HTMLButtonElement as unknown as typeof HTMLButtonElement

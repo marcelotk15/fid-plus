@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite'
 import { readFileSync } from 'node:fs'
 import { defineConfig } from 'wxt'
 
@@ -21,6 +22,10 @@ function versions() {
 }
 
 export default defineConfig({
+  modules: ['@wxt-dev/module-react'],
+  vite: () => ({
+    plugins: [tailwindcss()],
+  }),
   webExt: {
     binaries: {
       edge: String.raw`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`,
@@ -34,6 +39,12 @@ export default defineConfig({
     action: {
       default_icon: iconMap,
     },
+    web_accessible_resources: [
+      {
+        matches: ['*://*.footballidentity.org/*'],
+        resources: [iconMap[128]],
+      },
+    ],
     ...versions(),
   }),
 })
