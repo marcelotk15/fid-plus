@@ -3,9 +3,10 @@ import { createRoot, type Root } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { SUPABASE } from '~/modules/shared/consts'
-import { useAuthUser } from '~/modules/shared/hooks/use-auth-user'
-import { useStorageItem } from '~/modules/shared/hooks/use-storage-item'
 import { installStorageChangeNotifier } from '~/modules/shared/storage-sync'
+
+import { useAuthUser } from './use-auth-user'
+import { useStorageItem } from './use-storage-item'
 
 function renderHook<T>(useHook: () => T): { result: { current: T }; root: Root; rerender: () => void } {
   const container = document.createElement('div')

@@ -14,7 +14,11 @@ vi.stubGlobal('browser', {
   },
 })
 
-function renderPanel(options?: { onClose?: () => void; onReady?: (handle: PopupHandle) => void }): {
+function renderPanel(options?: {
+  onClose?: () => void
+  onReady?: (handle: PopupHandle) => void
+  onPersistState?: (state: unknown) => void
+}): {
   container: HTMLDivElement
   root: Root
   handle: PopupHandle | null
@@ -33,6 +37,7 @@ function renderPanel(options?: { onClose?: () => void; onReady?: (handle: PopupH
       <PopupPanel
         wrapperRef={wrapperRef}
         onClose={options?.onClose ?? (() => {})}
+        onPersistState={options?.onPersistState}
         onReady={(nextHandle) => {
           handle = nextHandle
           options?.onReady?.(nextHandle)
@@ -132,6 +137,63 @@ describe('popup-panel', () => {
 
     const panel = document.querySelector('#aside-popup')
     expect(panel?.querySelector('[data-testid="popup-open"]')).not.toBeNull()
+  })
+
+  it('exposes imperative minimize handle for open state', () => {
+    const { root, handle } = renderPanel()
+    roots.push(root)
+
+    act(() => {
+      handle?.minimize()
+    })
+
+    expect(handle?.isMinimized()).toBe(true)
+    expect(document.querySelector('[data-testid="popup-minimized"]')).not.toBeNull()
+  })
+
+  it('persists visible minimized state when minimizing', () => {
+    const onPersistState = vi.fn()
+    const { root } = renderPanel({ onPersistState })
+    roots.push(root)
+
+    clickByLabel('Minimizar')
+
+    expect(onPersistState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        visible: true,
+        mode: 'minimized',
+      }),
+    )
+  })
+
+  it('restores minimized state from initial props after refresh', () => {
+    const container = document.createElement('div')
+    document.body.append(container)
+
+    const wrapperRef = createRef<HTMLDivElement>()
+    wrapperRef.current = container
+    container.style.position = 'fixed'
+    container.style.top = '120px'
+    container.style.right = '16px'
+
+    const root = createRoot(container)
+
+    act(() => {
+      root.render(
+        <PopupPanel
+          wrapperRef={wrapperRef}
+          initialMode="minimized"
+          initialMinimizedTop={120}
+          onClose={() => {}}
+          onReady={() => {}}
+        />,
+      )
+    })
+
+    roots.push(root)
+
+    expect(document.querySelector('[data-testid="popup-minimized"]')).not.toBeNull()
+    expect(container.style.top).toBe('120px')
   })
 
   it('header drag does not block close button clicks', () => {

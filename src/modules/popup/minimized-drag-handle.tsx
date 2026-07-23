@@ -1,15 +1,16 @@
 import { useState, type RefObject } from 'react'
 
-import { cn } from '~/lib/cn'
+import { cn } from '~/modules/shared/react/utils/cn'
 
 import { applyMinimizedVerticalPosition } from './popup-position'
 
 type MinimizedDragHandleProps = {
   wrapperRef: RefObject<HTMLDivElement | null>
   onDraggingChange?: (dragging: boolean) => void
+  onPositionChange?: (top: number) => void
 }
 
-export function MinimizedDragHandle({ wrapperRef, onDraggingChange }: MinimizedDragHandleProps) {
+export function MinimizedDragHandle({ wrapperRef, onDraggingChange, onPositionChange }: MinimizedDragHandleProps) {
   const [isGrabbing, setIsGrabbing] = useState(false)
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -40,6 +41,9 @@ export function MinimizedDragHandle({ wrapperRef, onDraggingChange }: MinimizedD
       handle.removeEventListener('pointermove', onPointerMove)
       handle.removeEventListener('pointerup', onPointerUp)
       handle.removeEventListener('pointercancel', onPointerUp)
+
+      const top = wrapper.getBoundingClientRect().top
+      onPositionChange?.(top)
     }
 
     handle.addEventListener('pointermove', onPointerMove)

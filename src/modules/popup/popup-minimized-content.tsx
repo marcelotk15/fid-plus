@@ -1,6 +1,6 @@
 import { useState, type RefObject } from 'react'
 
-import { cn } from '~/lib/cn'
+import { cn } from '~/modules/shared/react/utils/cn'
 
 import { MinimizedDragHandle } from './minimized-drag-handle'
 import { MinimizedIconButton } from './minimized-icon-button'
@@ -8,9 +8,10 @@ import { MinimizedIconButton } from './minimized-icon-button'
 type PopupMinimizedContentProps = {
   wrapperRef: RefObject<HTMLDivElement | null>
   onOpen: () => void
+  onPositionChange?: (top: number) => void
 }
 
-export function PopupMinimizedContent({ wrapperRef, onOpen }: PopupMinimizedContentProps) {
+export function PopupMinimizedContent({ wrapperRef, onOpen, onPositionChange }: PopupMinimizedContentProps) {
   const [isDragging, setIsDragging] = useState(false)
 
   return (
@@ -22,7 +23,11 @@ export function PopupMinimizedContent({ wrapperRef, onOpen }: PopupMinimizedCont
           isDragging ? '-translate-x-2' : 'group-hover:-translate-x-2',
         )}
       />
-      <MinimizedDragHandle wrapperRef={wrapperRef} onDraggingChange={setIsDragging} />
+      <MinimizedDragHandle
+        wrapperRef={wrapperRef}
+        onDraggingChange={setIsDragging}
+        onPositionChange={onPositionChange}
+      />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import iconUrl from '/icon.png'
 
-import { cn } from '~/lib/cn'
 import { APP_NAME } from '~/modules/shared/consts'
+import { cn } from '~/modules/shared/react/utils/cn'
 
 export const MINIMIZED_ICON_SIZE_PX = 45
 const POPUP_ICON_URL = browser.runtime.getURL(iconUrl as '/icon.png')
@@ -16,7 +16,7 @@ export function MinimizedIconButton({ onClick, className }: MinimizedIconButtonP
     <div
       role="button"
       className={cn(
-        'minimized-icon shrink-0 w-[55px] h-[55px] bg-primary-300 rounded-[10px] shadow-lg overflow-hidden p-0 cursor-pointer flex items-center justify-center',
+        'minimized-icon shrink-0 w-[55px] h-[55px] bg-primary-900 rounded-[10px] shadow-lg overflow-hidden p-0 cursor-pointer flex items-center justify-center',
         className,
       )}
       aria-label="Abrir menu"

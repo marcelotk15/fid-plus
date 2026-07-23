@@ -15,7 +15,7 @@ export function HeaderButton({ label, onClick, children }: HeaderButtonProps) {
     <button
       type="button"
       data-testid="header-button"
-      className="flex items-center justify-center w-[25px] h-[25px] border-0 bg-transparent hover:opacity-80 p-0 cursor-pointer"
+      className="flex text-primary-900 items-center justify-center w-[25px] h-[25px] border-0 bg-transparent hover:opacity-80 p-0 cursor-pointer"
       aria-label={label}
       onPointerDown={stopDragPropagation}
       onClick={onClick}

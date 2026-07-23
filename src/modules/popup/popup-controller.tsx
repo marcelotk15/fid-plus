@@ -2,6 +2,7 @@ import { createRef, StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { PopupPanel, type PopupHandle } from './popup-panel'
+import { readPopupPersistedState, writePopupPersistedState } from './popup-state'
 
 export const PANEL_HOST_ID = 'fid-plus-popup-host'
 const INITIAL_OFFSET_PX = 24
@@ -24,7 +25,19 @@ function applyInitialPosition(wrapper: HTMLDivElement): void {
   wrapper.style.zIndex = '2147483647'
 }
 
+function getInitialPanelProps() {
+  const persisted = readPopupPersistedState()
+
+  return {
+    initialMode: persisted?.mode ?? 'minimized',
+    initialOpenPosition: persisted?.openPosition ?? null,
+    initialMinimizedTop: persisted?.minimizedTop ?? null,
+  }
+}
+
 export async function initPopupUi(ctx: InstanceType<typeof ContentScriptContext>): Promise<void> {
+  const initialProps = getInitialPanelProps()
+
   ui = await createShadowRootUi<MountedElements>(ctx, {
     name: 'fid-plus-popup',
     position: 'inline',
@@ -41,7 +54,11 @@ export async function initPopupUi(ctx: InstanceType<typeof ContentScriptContext>
         <StrictMode>
           <PopupPanel
             wrapperRef={wrapperRef}
-            onClose={() => destroyPopup()}
+            initialMode={initialProps.initialMode}
+            initialOpenPosition={initialProps.initialOpenPosition}
+            initialMinimizedTop={initialProps.initialMinimizedTop}
+            onPersistState={(state) => writePopupPersistedState(globalThis.localStorage, state)}
+            onClose={() => closePopup()}
             onReady={(handle) => {
               panelHandle = handle
             }}
@@ -60,20 +77,40 @@ export async function initPopupUi(ctx: InstanceType<typeof ContentScriptContext>
   })
 }
 
+export function restorePopupIfNeeded(): void {
+  if (!ui || ui.mounted) return
+
+  const persisted = readPopupPersistedState()
+  if (persisted?.visible === false) return
+
+  if (!persisted) {
+    writePopupPersistedState(globalThis.localStorage, {
+      visible: true,
+      mode: 'minimized',
+    })
+  }
+
+  ui.mount()
+}
+
 export function togglePopup(): void {
   if (!ui) return
 
   if (!ui.mounted) {
     ui.mount()
     panelHandle?.open()
-    return
-  }
-
-  if (panelHandle?.isMinimized()) {
+  } else if (panelHandle?.isMinimized()) {
     panelHandle.open()
-    return
+  } else {
+    panelHandle?.minimize()
   }
+}
 
+export function closePopup(): void {
+  writePopupPersistedState(globalThis.localStorage, {
+    visible: false,
+    mode: 'minimized',
+  })
   destroyPopup()
 }
 

@@ -1,4 +1,6 @@
 import { Browser } from 'happy-dom'
+import { beforeAll, vi } from 'vitest'
+import { fakeBrowser } from 'wxt/testing/fake-browser'
 
 const browser = new Browser()
 const page = browser.newPage()
@@ -18,3 +20,7 @@ globalThis.AbortSignal = window.AbortSignal as unknown as typeof AbortSignal
 globalThis.DOMException = window.DOMException as unknown as typeof DOMException
 globalThis.MessageEvent = window.MessageEvent as unknown as typeof MessageEvent
 globalThis.CustomEvent = window.CustomEvent as unknown as typeof CustomEvent
+
+beforeAll(() => {
+  fakeBrowser.runtime.getManifest = vi.fn(() => ({ version: '0.2.0' }))
+})
