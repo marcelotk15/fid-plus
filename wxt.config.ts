@@ -1,4 +1,7 @@
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'wxt'
+
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'))
 
 const iconMap = {
   16: '/icon.png',
@@ -10,9 +13,7 @@ const iconMap = {
 
 function versions() {
   return {
-    ...(process.env.EXTENSION_VERSION && {
-      version: process.env.EXTENSION_VERSION,
-    }),
+    version: process.env.EXTENSION_VERSION ?? pkg.version,
     ...(process.env.EXTENSION_VERSION_NAME && {
       version_name: process.env.EXTENSION_VERSION_NAME,
     }),
