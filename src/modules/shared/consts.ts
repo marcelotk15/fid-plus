@@ -14,17 +14,9 @@ export const SUPABASE = {
   CLIENT_INFO: 'supabase-js-web/2.99.2',
 } as const
 
-export const DAILY_PACK = {
-  RPC: 'get_daily_pack_status',
-  CACHE_STORAGE_KEY: 'fid-plus:daily-pack:next-reset-at',
-} as const
-
-export const DAILY_PACK_ENDPOINT = `${SUPABASE.BASE_URL}${SUPABASE.RPC_PATH_PREFIX}/${DAILY_PACK.RPC}` as const
-
 /** Identificadores da comunicação entre content scripts da extensão. */
 export const MESSAGE_SOURCE = {
   QUIZ_CONTENT: 'quiz-content',
-  DAILY_PACK: 'fid-plus:daily-pack',
 } as const
 
 export const MESSAGE_TYPE = {
