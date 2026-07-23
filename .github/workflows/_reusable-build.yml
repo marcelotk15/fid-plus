@@ -1,0 +1,85 @@
+name: Build extension
+
+on:
+  workflow_call:
+    inputs:
+      bun-version:
+        type: string
+        required: true
+      ref:
+        type: string
+        required: false
+      extension-version-name:
+        type: string
+        required: false
+      artifact-name:
+        type: string
+        required: false
+        default: chrome-extension-zip
+      upload-artifact:
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      zip-path:
+        description: Path to the Chrome extension zip file
+        value: ${{ jobs.build.outputs.zip-path }}
+      zip-name:
+        description: Name of the Chrome extension zip file
+        value: ${{ jobs.build.outputs.zip-name }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build extension package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      zip-path: ${{ steps.chrome_zip.outputs.zip }}
+      zip-name: ${{ steps.chrome_zip.outputs.zip_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ inputs.bun-version }}
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Define extension version name
+        if: inputs.extension-version-name != ''
+        run: |
+          echo "EXTENSION_VERSION_NAME=${{ inputs.extension-version-name }}" >> "$GITHUB_ENV"
+
+      - name: Zip extension
+        run: bun run zip
+
+      - name: Find Chrome zip
+        id: chrome_zip
+        run: |
+          ZIP=$(find .output -maxdepth 1 -type f -name "*-chrome.zip" | head -n 1)
+
+          if [ -z "$ZIP" ]; then
+            echo "Chrome zip not found in .output"
+            exit 1
+          fi
+
+          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+          echo "zip_name=$(basename "$ZIP")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifact
+        if: inputs.upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ steps.chrome_zip.outputs.zip }}
+          if-no-files-found: error
+          retention-days: 7

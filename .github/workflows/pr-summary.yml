@@ -1,0 +1,146 @@
+name: PR Summary
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: pr-summary-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  summarize:
+    name: Post promotion summary
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Create or update PR summary comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const MARKER = '<!-- automated-pr-summary -->';
+            const CONVENTIONAL_RE = /^(feat|fix|perf|docs|refactor|test|build|ci|chore|revert)(\([^)]+\))?(!)?:\s*(.+)$/i;
+
+            const SECTIONS = [
+              { key: 'feat', title: 'Funcionalidades' },
+              { key: 'fix', title: 'Correções' },
+              { key: 'perf', title: 'Performance' },
+              { key: 'docs', title: 'Documentação' },
+              { key: 'refactor', title: 'Refatorações' },
+              { key: 'test', title: 'Testes' },
+              { key: 'build-ci', title: 'Build e CI' },
+              { key: 'other', title: 'Outras alterações' },
+            ];
+
+            const TYPE_TO_SECTION = {
+              feat: 'feat',
+              fix: 'fix',
+              perf: 'perf',
+              docs: 'docs',
+              refactor: 'refactor',
+              test: 'test',
+              build: 'build-ci',
+              ci: 'build-ci',
+              chore: 'other',
+              revert: 'other',
+            };
+
+            function parseCommit(message) {
+              const firstLine = message.split('\n')[0].trim();
+              const match = firstLine.match(CONVENTIONAL_RE);
+
+              if (!match) {
+                return { sectionKey: 'other', display: firstLine };
+              }
+
+              const type = match[1].toLowerCase();
+              const scope = match[2] ? match[2].slice(1, -1) : null;
+              const description = match[4].trim();
+              const display = scope ? `(${scope}) ${description}` : description;
+              const sectionKey = TYPE_TO_SECTION[type] || 'other';
+
+              return { sectionKey, display };
+            }
+
+            const pullRequest = context.payload.pull_request;
+            const { owner, repo } = context.repo;
+
+            const commits = await github.paginate(github.rest.pulls.listCommits, {
+              owner,
+              repo,
+              pull_number: pullRequest.number,
+            });
+
+            const grouped = Object.fromEntries(SECTIONS.map(({ key }) => [key, []]));
+            const seen = Object.fromEntries(SECTIONS.map(({ key }) => [key, new Set()]));
+
+            for (const { commit } of commits) {
+              const { sectionKey, display } = parseCommit(commit.message);
+
+              if (seen[sectionKey].has(display)) {
+                continue;
+              }
+
+              seen[sectionKey].add(display);
+              grouped[sectionKey].push(display);
+            }
+
+            let body = `${MARKER}\n\n## Conteúdo desta promoção\n\n`;
+
+            for (const { key, title } of SECTIONS) {
+              const items = grouped[key];
+              if (items.length === 0) {
+                continue;
+              }
+
+              body += `### ${title}\n`;
+              for (const item of items) {
+                body += `- ${item}\n`;
+              }
+              body += '\n';
+            }
+
+            body += '### Resumo\n\n';
+            body += `- **Commits:** ${commits.length}\n`;
+            body += `- **Arquivos alterados:** ${pullRequest.changed_files}\n`;
+            body += `- **Adições:** ${pullRequest.additions}\n`;
+            body += `- **Remoções:** ${pullRequest.deletions}\n\n`;
+            body += '_Comentário atualizado automaticamente conforme o PR é alterado._';
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: pullRequest.number,
+            });
+
+            const existing = comments.find(
+              (comment) => comment.body && comment.body.includes(MARKER),
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pullRequest.number,
+                body,
+              });
+            }

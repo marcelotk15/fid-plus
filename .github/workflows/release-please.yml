@@ -1,5 +1,8 @@
 name: Release Please
 
+# Runs only on main after merge commits from develop → main.
+# Creates or updates the Release PR; official tags and GitHub Releases
+# are created when that Release PR is merged.
 on:
   push:
     branches:
@@ -9,10 +12,9 @@ permissions:
   contents: write
   pull-requests: write
 
-# Avoid duplicated release PRs when there are multiple pushes in a row on main
 concurrency:
-  group: release-please-${{ github.ref }}
-  cancel-in-progress: true
+  group: release-please-main
+  cancel-in-progress: false
 
 jobs:
   release-please:

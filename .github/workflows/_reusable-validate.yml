@@ -1,0 +1,47 @@
+name: Validate project
+
+on:
+  workflow_call:
+    inputs:
+      bun-version:
+        type: string
+        required: true
+      ref:
+        required: false
+        type: string
+        description: Git ref to checkout (defaults to the triggering commit)
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate project
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ inputs.bun-version }}
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Format check
+        run: bun run format:check
+
+      - name: Compile
+        run: bun run compile
+
+      - name: Test
+        run: bun run test:run

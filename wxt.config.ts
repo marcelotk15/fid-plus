@@ -22,5 +22,8 @@ export default defineConfig({
     action: {
       default_icon: iconMap,
     },
+    ...(process.env.EXTENSION_VERSION_NAME && {
+      version_name: process.env.EXTENSION_VERSION_NAME,
+    }),
   }),
 })
