@@ -8,6 +8,17 @@ const iconMap = {
   128: '/icon.png',
 } as const
 
+function versions() {
+  return {
+    ...(process.env.EXTENSION_VERSION && {
+      version: process.env.EXTENSION_VERSION,
+    }),
+    ...(process.env.EXTENSION_VERSION_NAME && {
+      version_name: process.env.EXTENSION_VERSION_NAME,
+    }),
+  }
+}
+
 export default defineConfig({
   webExt: {
     binaries: {
@@ -22,8 +33,6 @@ export default defineConfig({
     action: {
       default_icon: iconMap,
     },
-    ...(process.env.EXTENSION_VERSION_NAME && {
-      version_name: process.env.EXTENSION_VERSION_NAME,
-    }),
+    ...versions(),
   }),
 })
