@@ -102,10 +102,10 @@ git checkout main && git pull && git checkout -b develop && git push -u origin d
 
 Configure branch protection no GitHub (**Settings → Branches**):
 
-| Branch | Recomendações |
-| ------ | ------------- |
-| `main` | Exigir PR de `develop`; permitir apenas merge commit; exigir checks CI e PR Title |
-| `develop` | Exigir PR de feature branches; exigir checks CI e PR Title |
+| Branch    | Recomendações                                                                     |
+| --------- | --------------------------------------------------------------------------------- |
+| `main`    | Exigir PR de `develop`; permitir apenas merge commit; exigir checks CI e PR Title |
+| `develop` | Exigir PR de feature branches; exigir checks CI e PR Title                        |
 
 ### Bootstrap (primeira vez)
 
@@ -120,12 +120,12 @@ git push origin v0.0.1
 
 Configure em **Settings → Secrets and variables → Actions**:
 
-| Secret                 | Descrição                          |
-| ---------------------- | ---------------------------------- |
-| `CHROME_EXTENSION_ID`  | ID da extensão na Chrome Web Store |
-| `CHROME_CLIENT_ID`     | OAuth do Google Cloud              |
-| `CHROME_CLIENT_SECRET` | OAuth do Google Cloud              |
-| `CHROME_REFRESH_TOKEN` | Token de refresh da API            |
+| Secret                 | Descrição                                      |
+| ---------------------- | ---------------------------------------------- |
+| `CHROME_EXTENSION_ID`  | ID da extensão na Chrome Web Store             |
+| `CHROME_CLIENT_ID`     | OAuth do Google Cloud                          |
+| `CHROME_CLIENT_SECRET` | OAuth do Google Cloud                          |
+| `CHROME_REFRESH_TOKEN` | Token de refresh da API                        |
 | `RELEASE_PLEASE_TOKEN` | Token com permissão de write em PRs e releases |
 
 Para obter as credenciais localmente:
