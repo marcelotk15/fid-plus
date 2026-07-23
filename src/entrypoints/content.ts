@@ -1,10 +1,6 @@
-import { EVENTS } from '~/constants'
+import type { RouteChangePayload } from '~/modules/shared/route-state'
 
-export type RouteChangePayload = {
-  href: string
-  pathname: string
-  search: string
-}
+import { EVENTS } from '~/constants'
 
 function emitRouteChangedEvent() {
   const detail: RouteChangePayload = {
