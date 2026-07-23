@@ -9,10 +9,11 @@ permissions:
   contents: write
   pull-requests: write
 
-# Avoid duplicated release PRs when there are multiple pushes in a row on main
+# Runs only on main (production). Commits arrive via merge commit from develop.
+# Avoid duplicated release PRs when there are multiple pushes in a row on main.
 concurrency:
-  group: release-please-${{ github.ref }}
-  cancel-in-progress: true
+  group: release-please-main
+  cancel-in-progress: false
 
 jobs:
   release-please:

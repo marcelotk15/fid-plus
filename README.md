@@ -49,9 +49,10 @@ Os testes ficam em `src/**/*.spec.ts` com ambiente `happy-dom`.
 
 ## Como contribuir
 
-1. Crie um fork e uma branch a partir de `main`.
-2. Implemente a alteração e adicione testes quando fizer sentido.
-3. Antes do commit, rode:
+1. Crie um fork e uma branch a partir de `develop` (ex.: `feat/minha-feature`, `fix/meu-bug`).
+2. Abra um PR para `develop` com título no padrão [Conventional Commits](https://www.conventionalcommits.org/) — por exemplo: `feat:`, `fix:`, `test:`, `docs:`.
+3. Implemente a alteração e adicione testes quando fizer sentido.
+4. Antes do commit, rode:
 
 ```bash
 bun lint
@@ -59,19 +60,52 @@ bun format:fix   # se necessário
 bun test:run
 ```
 
-4. Use commits no padrão [Conventional Commits](https://www.conventionalcommits.org/), por exemplo: `feat:`, `fix:`, `test:`, `docs:`.
+5. Use commits no padrão Conventional Commits — por exemplo: `feat:`, `fix:`, `test:`, `docs:`.
 
-O pre-commit executa lint e testes automaticamente; o commit-msg valida o formato da mensagem.
+O pre-commit executa lint e testes automaticamente; o commit-msg valida o formato da mensagem. O CI também valida o título do PR.
 
 ## Releases e publicação
 
 O projeto usa [Release Please](https://github.com/googleapis/release-please) para gerar changelog, bump de versão e GitHub Releases a partir dos commits convencionais em `main`.
 
-### Fluxo
+### Fluxo de branches
 
-1. Merges em `main` atualizam o Release PR automaticamente.
-2. Ao mergear o Release PR, uma tag e um GitHub Release são criados.
-3. O workflow de release gera o `.zip`, anexa em **Assets** no GitHub Release e envia para a Chrome Web Store.
+```text
+feature/* | fix/* | hotfix/*
+        ↓
+     develop          ← CI (PR + push)
+        ↓
+ PR develop → main   ← merge commit (nunca squash)
+        ↓
+ Release Please      ← push em main
+        ↓
+ Release PR
+        ↓
+ GitHub Release + tag
+        ↓
+ Deploy produção     ← Chrome Web Store
+```
+
+1. PRs e pushes em `develop` disparam o CI (lint, format, compile, test).
+2. PR de `develop` → `main` usa **merge commit** (nunca squash).
+3. Merges em `main` atualizam o Release PR automaticamente.
+4. Ao mergear o Release PR, uma tag e um GitHub Release são criados.
+5. A publicação da release dispara o deploy de produção: gera o `.zip`, anexa em **Assets** no GitHub Release e envia para a Chrome Web Store.
+
+### Configuração inicial (uma vez)
+
+Crie a branch de integração a partir de `main`:
+
+```bash
+git checkout main && git pull && git checkout -b develop && git push -u origin develop
+```
+
+Configure branch protection no GitHub (**Settings → Branches**):
+
+| Branch | Recomendações |
+| ------ | ------------- |
+| `main` | Exigir PR de `develop`; permitir apenas merge commit; exigir checks CI e PR Title |
+| `develop` | Exigir PR de feature branches; exigir checks CI e PR Title |
 
 ### Bootstrap (primeira vez)
 
@@ -92,6 +126,7 @@ Configure em **Settings → Secrets and variables → Actions**:
 | `CHROME_CLIENT_ID`     | OAuth do Google Cloud              |
 | `CHROME_CLIENT_SECRET` | OAuth do Google Cloud              |
 | `CHROME_REFRESH_TOKEN` | Token de refresh da API            |
+| `RELEASE_PLEASE_TOKEN` | Token com permissão de write em PRs e releases |
 
 Para obter as credenciais localmente:
 
