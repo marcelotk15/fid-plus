@@ -69,7 +69,7 @@ O pre-commit executa lint e testes automaticamente; o commit-msg valida o format
 
 O projeto usa [Release Please](https://github.com/googleapis/release-please) para gerar changelog, bump de versão e GitHub Releases a partir dos commits convencionais em `main`.
 
-### Fluxo
+### Fluxo de branches
 
 ```text
 feature/* | fix/*
