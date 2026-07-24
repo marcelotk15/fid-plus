@@ -20,6 +20,14 @@ on:
         type: boolean
         required: false
         default: false
+      build-firefox:
+        type: boolean
+        required: false
+        default: false
+      firefox-artifact-name:
+        type: string
+        required: false
+        default: firefox-extension-zip
     outputs:
       zip-path:
         description: Path to the Chrome extension zip file
@@ -27,6 +35,12 @@ on:
       zip-name:
         description: Name of the Chrome extension zip file
         value: ${{ jobs.build.outputs.zip-name }}
+      firefox-zip-name:
+        description: Name of the Firefox extension zip file
+        value: ${{ jobs.build.outputs.firefox-zip-name }}
+      firefox-sources-zip-name:
+        description: Name of the Firefox sources zip file
+        value: ${{ jobs.build.outputs.firefox-sources-zip-name }}
 
 permissions:
   contents: read
@@ -39,6 +53,8 @@ jobs:
     outputs:
       zip-path: ${{ steps.chrome_zip.outputs.zip }}
       zip-name: ${{ steps.chrome_zip.outputs.zip_name }}
+      firefox-zip-name: ${{ steps.firefox_zip.outputs.zip_name }}
+      firefox-sources-zip-name: ${{ steps.firefox_zip.outputs.sources_name }}
 
     steps:
       - name: Checkout repository
@@ -81,5 +97,42 @@ jobs:
         with:
           name: ${{ inputs.artifact-name }}
           path: ${{ steps.chrome_zip.outputs.zip }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Zip Firefox extension
+        if: inputs.build-firefox
+        run: bun run zip:firefox
+
+      - name: Find Firefox zips
+        if: inputs.build-firefox
+        id: firefox_zip
+        run: |
+          FIREFOX_ZIP=$(find .output -maxdepth 1 -type f -name "*-firefox.zip" | head -n 1)
+          SOURCES_ZIP=$(find .output -maxdepth 1 -type f -name "*-sources.zip" | head -n 1)
+
+          if [ -z "$FIREFOX_ZIP" ]; then
+            echo "Firefox zip not found in .output"
+            exit 1
+          fi
+
+          if [ -z "$SOURCES_ZIP" ]; then
+            echo "Firefox sources zip not found in .output"
+            exit 1
+          fi
+
+          echo "zip=$FIREFOX_ZIP" >> "$GITHUB_OUTPUT"
+          echo "zip_name=$(basename "$FIREFOX_ZIP")" >> "$GITHUB_OUTPUT"
+          echo "sources=$SOURCES_ZIP" >> "$GITHUB_OUTPUT"
+          echo "sources_name=$(basename "$SOURCES_ZIP")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Firefox artifact
+        if: inputs.build-firefox && inputs.upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.firefox-artifact-name }}
+          path: |
+            ${{ steps.firefox_zip.outputs.zip }}
+            ${{ steps.firefox_zip.outputs.sources }}
           if-no-files-found: error
           retention-days: 7
