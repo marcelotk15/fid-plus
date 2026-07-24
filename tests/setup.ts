@@ -22,5 +22,9 @@ globalThis.MessageEvent = window.MessageEvent as unknown as typeof MessageEvent
 globalThis.CustomEvent = window.CustomEvent as unknown as typeof CustomEvent
 
 beforeAll(() => {
-  fakeBrowser.runtime.getManifest = vi.fn(() => ({ version: '0.2.0' }))
+  fakeBrowser.runtime.getManifest = vi.fn(() => ({
+    manifest_version: 3,
+    name: 'FID+',
+    version: '0.2.0',
+  }))
 })
