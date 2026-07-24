@@ -23,25 +23,14 @@
     "postinstall": "wxt prepare",
     "prepare": "husky"
   },
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "tailwind-merge": "^3.6.0"
-  },
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
-    "@tailwindcss/vite": "^4.3.2",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
     "@vitest/coverage-v8": "^4.1.8",
-    "@wxt-dev/module-react": "^1.2.2",
     "happy-dom": "^20.10.2",
     "husky": "^9.1.7",
     "oxfmt": "^0.54.0",
     "oxlint": "^1.69.0",
-    "tailwindcss": "^4.3.2",
     "typescript": "^5.9.3",
     "vitest": "^4.1.8",
     "wxt": "^0.20.26"

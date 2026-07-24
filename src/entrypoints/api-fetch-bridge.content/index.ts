@@ -1,9 +1,9 @@
-import type { RouteChangePayload } from '~/modules/shared/route-state'
+import type { RouteChangePayload } from '~/entrypoints/content'
 
 import { EVENTS } from '~/constants'
+import { handleRouteChange } from '~/modules/quiz/quiz-fetch-bridge'
 import { FetchInterceptor } from '~/modules/shared/fetch-interceptor'
 import { fetchInterceptRuleRegistry } from '~/modules/shared/register-fetch-intercept-rules'
-import { handleRouteChange } from '~/modules/shared/route-state'
 
 export default defineContentScript({
   matches: ['*://*.footballidentity.org/*'],
