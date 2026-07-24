@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { StorageLike } from './storage.types'
 
 import { SUPABASE } from './consts'
-import { readSupabaseAccessToken } from './supabase-auth'
+import { readSupabaseAccessToken, readSupabaseSession, readSupabaseSessionFromRaw } from './supabase-auth'
 
 function createMemoryStorage(initial: Record<string, string> = {}): StorageLike {
   const store = new Map(Object.entries(initial))
@@ -75,5 +75,37 @@ describe('supabase-auth', () => {
     })
 
     expect(readSupabaseAccessToken(storage)).toBe('no-expiry-token')
+  })
+
+  it('returns session with user when auth is valid', () => {
+    const storage = createMemoryStorage({
+      [SUPABASE.AUTH_STORAGE_KEY]: JSON.stringify({
+        access_token: 'valid-token',
+        token_type: 'bearer',
+        expires_at: 4_000_000_000,
+        user: {
+          id: 'user-1',
+          email: 'player@example.com',
+        },
+      }),
+    })
+
+    expect(readSupabaseSession(storage, 1_700_000_000_000)).toEqual({
+      accessToken: 'valid-token',
+      user: {
+        id: 'user-1',
+        email: 'player@example.com',
+      },
+      expiresAt: 4_000_000_000,
+    })
+  })
+
+  it('returns null session when user is missing', () => {
+    const raw = JSON.stringify({
+      access_token: 'valid-token',
+      token_type: 'bearer',
+    })
+
+    expect(readSupabaseSessionFromRaw(raw)).toBeNull()
   })
 })
