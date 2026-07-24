@@ -69,7 +69,7 @@ O pre-commit executa lint e testes automaticamente; o commit-msg valida o format
 
 O projeto usa [Release Please](https://github.com/googleapis/release-please) para gerar changelog, bump de versão e GitHub Releases a partir dos commits convencionais em `main`.
 
-### Fluxo de branches
+### Fluxo
 
 ```text
 feature/* | fix/*
@@ -119,12 +119,12 @@ git push origin v0.0.1
 
 Configure em **Settings → Secrets and variables → Actions**:
 
-| Secret                 | Descrição                                     |
-| ---------------------- | --------------------------------------------- |
-| `CHROME_EXTENSION_ID`  | ID da extensão na Chrome Web Store            |
-| `CHROME_CLIENT_ID`     | OAuth do Google Cloud                         |
-| `CHROME_CLIENT_SECRET` | OAuth do Google Cloud                         |
-| `CHROME_REFRESH_TOKEN` | Token de refresh da API                       |
+| Secret                 | Descrição                          |
+| ---------------------- | ---------------------------------- |
+| `CHROME_EXTENSION_ID`  | ID da extensão na Chrome Web Store |
+| `CHROME_CLIENT_ID`     | OAuth do Google Cloud              |
+| `CHROME_CLIENT_SECRET` | OAuth do Google Cloud              |
+| `CHROME_REFRESH_TOKEN` | Token de refresh da API            |
 | `RELEASE_PLEASE_TOKEN` | PAT para Release Please e triggers de release |
 
 Para obter as credenciais localmente:

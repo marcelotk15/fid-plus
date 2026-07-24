@@ -1,7 +1,10 @@
-import type { RouteChangePayload } from '~/modules/shared/route-state'
-
 import { EVENTS } from '~/constants'
-import { installStorageChangeNotifier } from '~/modules/shared/storage-sync'
+
+export type RouteChangePayload = {
+  href: string
+  pathname: string
+  search: string
+}
 
 function emitRouteChangedEvent() {
   const detail: RouteChangePayload = {
@@ -55,7 +58,6 @@ export default defineContentScript({
   runAt: 'document_start',
   world: 'MAIN',
   main() {
-    installStorageChangeNotifier()
     watchRouteChanges()
 
     emitRouteChangedEvent()

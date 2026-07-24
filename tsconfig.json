@@ -2,7 +2,6 @@
   "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "jsx": "react-jsx",
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./tests/*"]

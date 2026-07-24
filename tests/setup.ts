@@ -1,6 +1,4 @@
 import { Browser } from 'happy-dom'
-import { beforeAll, vi } from 'vitest'
-import { fakeBrowser } from 'wxt/testing/fake-browser'
 
 const browser = new Browser()
 const page = browser.newPage()
@@ -8,8 +6,6 @@ const window = page.mainFrame.window
 
 globalThis.window = window as unknown as Window & typeof globalThis
 globalThis.document = window.document as unknown as Document
-globalThis.localStorage = window.localStorage
-;(globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 globalThis.Event = window.Event as unknown as typeof Event
 globalThis.HTMLElement = window.HTMLElement as unknown as typeof HTMLElement
 globalThis.HTMLButtonElement = window.HTMLButtonElement as unknown as typeof HTMLButtonElement
@@ -20,11 +16,3 @@ globalThis.AbortSignal = window.AbortSignal as unknown as typeof AbortSignal
 globalThis.DOMException = window.DOMException as unknown as typeof DOMException
 globalThis.MessageEvent = window.MessageEvent as unknown as typeof MessageEvent
 globalThis.CustomEvent = window.CustomEvent as unknown as typeof CustomEvent
-
-beforeAll(() => {
-  fakeBrowser.runtime.getManifest = vi.fn(() => ({
-    manifest_version: 3,
-    name: 'FID+',
-    version: '0.2.0',
-  }))
-})

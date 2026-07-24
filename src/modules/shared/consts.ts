@@ -1,5 +1,10 @@
 export const APP_NAME = 'FID Plus'
 
+/** Rotas do site Football Identity (navegação SPA). */
+export const FID_ROUTE = {
+  QUIZ: '/player/quiz',
+} as const
+
 /** URLs e paths do backend Supabase. */
 export const SUPABASE = {
   BASE_URL: 'https://vbpgsdotwsfsiutydpad.supabase.co',
@@ -16,51 +21,15 @@ export const DAILY_PACK = {
 
 export const DAILY_PACK_ENDPOINT = `${SUPABASE.BASE_URL}${SUPABASE.RPC_PATH_PREFIX}/${DAILY_PACK.RPC}` as const
 
-export const CONTRACTS = {
-  TABLE_PATH: '/rest/v1/contracts',
-} as const
-
-export const CONTRACTS_ENDPOINT = `${SUPABASE.BASE_URL}${CONTRACTS.TABLE_PATH}` as const
-
-export const PROFILES = {
-  TABLE_PATH: '/rest/v1/profiles',
-  SELECT_FIELDS:
-    'id,username,role_selected,created_at,updated_at,avatar_url,avatar_char_ref,bio,active_player_profile_id,active_manager_profile_id,active_journalist_profile_id,is_admin,tutorials_seen,country_code,country_code_locked,preferred_language,player_last_reset_at,banned_until,ban_reason',
-} as const
-
-export const PROFILES_ENDPOINT = `${SUPABASE.BASE_URL}${PROFILES.TABLE_PATH}` as const
-
-export const ACTIVE_SPONSORSHIPS = {
-  TABLE_PATH: '/rest/v1/active_sponsorships',
-} as const
-
-export const ACTIVE_SPONSORSHIPS_ENDPOINT = `${SUPABASE.BASE_URL}${ACTIVE_SPONSORSHIPS.TABLE_PATH}` as const
-
-export const WEEKLY_OBJECTIVES = {
-  RPC: 'get_my_weekly_objectives',
-} as const
-
-export const WEEKLY_OBJECTIVES_ENDPOINT =
-  `${SUPABASE.BASE_URL}${SUPABASE.RPC_PATH_PREFIX}/${WEEKLY_OBJECTIVES.RPC}` as const
-
-export const WEEKLY_EARNINGS = {
-  CACHE_KEY_PREFIX: 'fid-plus:weekly-earnings',
-  SPONSORSHIPS_STALE_MS: 60 * 60 * 1000,
-} as const
-
-export function weeklyEarningsCacheKey(userId: string): string {
-  return `${WEEKLY_EARNINGS.CACHE_KEY_PREFIX}:${userId}`
-}
-
 /** Identificadores da comunicação entre content scripts da extensão. */
 export const MESSAGE_SOURCE = {
+  QUIZ_CONTENT: 'quiz-content',
   DAILY_PACK: 'fid-plus:daily-pack',
-  WEEKLY_EARNINGS: 'fid-plus:weekly-earnings',
 } as const
 
-export const WEEKLY_EARNINGS_MESSAGE_TYPE = {
-  PROFILE: 'weekly-earnings:profile',
-  CONTRACT: 'weekly-earnings:contract',
-  SPONSORSHIPS: 'weekly-earnings:sponsorships',
-  OBJECTIVES: 'weekly-earnings:objectives',
+export const MESSAGE_TYPE = {
+  GET_SQUAD_HUMANS_FOR_MINIGAME: 'get_squad_humans_for_minigame',
+  GET_STADIUMS_FOR_MINIGAME: 'get_stadiums_for_minigame',
+  GET_LEAGUE_HUMANS_FOR_MINIGAME: 'get_league_humans_for_minigame',
+  GET_TOP_SCORERS_FOR_MINIGAME: 'get_top_scorers_for_minigame',
 } as const
