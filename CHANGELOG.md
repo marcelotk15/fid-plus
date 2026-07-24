@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.0](https://github.com/marcelotk15/fid-plus/compare/v0.2.0...v0.3.0) (2026-07-24)
+
+
+### Features
+
+* **config:** add versioning function to manage extension version and name from environment variables ([ce290eb](https://github.com/marcelotk15/fid-plus/commit/ce290ebdfccb99ab120a7e7e63ecc31671ccdebb))
+* **config:** enhance versioning function to include package version fallback ([505700a](https://github.com/marcelotk15/fid-plus/commit/505700ad49dc3d13afdb5570f43f8c2fff1a2943))
+* popup with weekly earnings list ([fbe9dcf](https://github.com/marcelotk15/fid-plus/commit/fbe9dcfe712fd60a19436f56003e683e3fa53f81))
+* **popup:** implement popup functionality with minimized state and storage synchronization ([d8494df](https://github.com/marcelotk15/fid-plus/commit/d8494df5f2f3adc7f612039bf7a187955cacb751))
+* **tests:** update setup to include manifest version and name in getManifest mock ([a772a7c](https://github.com/marcelotk15/fid-plus/commit/a772a7c3fff5d58416470d912cfa009550aa6d5a))
+* **weekly-earnings:** add contracts API and integrate with popup ([7cdd9ce](https://github.com/marcelotk15/fid-plus/commit/7cdd9ce8db69293267b649cadf963f5661951e5f))
+
+
+### Code Refactoring
+
+* **quiz:** migrate route change payload and remove unused quiz modules ([79c5030](https://github.com/marcelotk15/fid-plus/commit/79c50300f7ecb30c6402b599c3ef97a6dd44d112))
+
 ## [0.2.0](https://github.com/marcelotk15/fid-plus/compare/v0.1.3...v0.2.0) (2026-06-20)
 
 
