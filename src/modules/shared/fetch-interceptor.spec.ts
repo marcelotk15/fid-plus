@@ -1,7 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { DAILY_PACK, MESSAGE_SOURCE } from '~/modules/shared/consts'
-
 import { FetchInterceptor } from './fetch-interceptor'
 
 describe('fetch-interceptor', () => {
@@ -23,21 +21,21 @@ describe('fetch-interceptor', () => {
   }
 
   it('publishes response for matching active rule', async () => {
-    const url = `https://vbpgsdotwsfsiutydpad.supabase.co/rest/v1/rpc/${DAILY_PACK.RPC}`
+    const url = 'https://example.com/api/test-endpoint'
     const postMessageSpy = vi.spyOn(globalThis, 'postMessage').mockImplementation(() => {})
 
     globalThis.fetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ claimed_today: false }), {
+      new Response(JSON.stringify({ ok: true }), {
         status: 200,
         headers: { 'content-type': 'application/json' },
       }),
     )
 
     interceptor.registerRule({
-      id: 'daily-pack',
-      source: MESSAGE_SOURCE.DAILY_PACK,
-      matchUrl: (requestUrl) => requestUrl.includes(DAILY_PACK.RPC),
-      resolveType: () => DAILY_PACK.RPC,
+      id: 'test-rule',
+      source: 'test-source',
+      matchUrl: (requestUrl) => requestUrl.includes('test-endpoint'),
+      resolveType: () => 'test-endpoint',
     })
 
     interceptor.setup()
@@ -47,11 +45,11 @@ describe('fetch-interceptor', () => {
 
     expect(postMessageSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        source: MESSAGE_SOURCE.DAILY_PACK,
-        type: DAILY_PACK.RPC,
+        source: 'test-source',
+        type: 'test-endpoint',
         payload: expect.objectContaining({
           status: 200,
-          body: { claimed_today: false },
+          body: { ok: true },
         }),
       }),
     )
