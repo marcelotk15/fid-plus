@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/marcelotk15/fid-plus/compare/v0.3.0...v0.4.0) (2026-07-27)
+
+
+### Features
+
+* firefox ([84cef46](https://github.com/marcelotk15/fid-plus/commit/84cef46a9ad1482a36971164ba3c926eebb7f9eb))
+* firefox ([80c7c85](https://github.com/marcelotk15/fid-plus/commit/80c7c8516113bb3a411b0afe322a65f4c69019b6))
+
 ## [0.3.0](https://github.com/marcelotk15/fid-plus/compare/v0.2.0...v0.3.0) (2026-07-24)
 
 
