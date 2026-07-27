@@ -6,6 +6,7 @@
   <a href="https://github.com/marcelotk15/fid-plus/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/marcelotk15/fid-plus/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/marcelotk15/fid-plus/releases/latest"><img alt="Build" src="https://img.shields.io/github/v/release/marcelotk15/fid-plus?include_prereleases"></a>
   <a href="https://chromewebstore.google.com/detail/fid-plus/hgonnokjmaapkalomekndnmldglhacgd"><img alt="Chrome Web Store" src="https://img.shields.io/chrome-web-store/v/hgonnokjmaapkalomekndnmldglhacgd"></a>
+  <a href="https://chromewebstore.google.com/detail/fid-plus/hgonnokjmaapkalomekndnmldglhacgd"><img alt="Firefox Web Store" src="https://img.shields.io/amo/v/fid-plus"></a>
   <a href="./LICENSE"><img alt="License: GPL-3.0" src="https://img.shields.io/badge/license-GPL--3.0-blue.svg"></a>
 </p>
 
