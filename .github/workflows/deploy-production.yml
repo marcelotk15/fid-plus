@@ -67,6 +67,8 @@ jobs:
       ref: ${{ github.event.release.tag_name }}
       artifact-name: chrome-extension-zip
       upload-artifact: true
+      build-firefox: true
+      firefox-artifact-name: firefox-extension-zip
 
   publish-release:
     name: Publish release assets
@@ -82,11 +84,20 @@ jobs:
           name: chrome-extension-zip
           path: .output
 
+      - name: Download Firefox zip artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: firefox-extension-zip
+          path: .output
+
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.release.tag_name }}
-          files: .output/${{ needs.build-release.outputs.zip-name }}
+          files: |
+            .output/${{ needs.build-release.outputs.zip-name }}
+            .output/${{ needs.build-release.outputs.firefox-zip-name }}
+            .output/${{ needs.build-release.outputs.firefox-sources-zip-name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -132,3 +143,48 @@ jobs:
           CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
           CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
           CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+  submit-firefox-addon-store:
+    name: Submit to Firefox Add-on Store
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs:
+      - build-release
+      - publish-release
+
+    environment:
+      name: firefox-addon-store
+
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Download Firefox zip artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: firefox-extension-zip
+          path: .output
+
+      - name: Submit to Firefox Add-on Store
+        run: |
+          bun wxt submit \
+            --firefox-zip ".output/${{ needs.build-release.outputs.firefox-zip-name }}" \
+            --firefox-sources-zip ".output/${{ needs.build-release.outputs.firefox-sources-zip-name }}"
+        env:
+          FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
