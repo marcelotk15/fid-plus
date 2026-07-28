@@ -1,6 +1,6 @@
 {
   "name": "fid-plus",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "description": "Improve some features of FID (Football Identity) extension",
   "license": "GPL-3.0-only",
