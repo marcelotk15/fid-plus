@@ -12,9 +12,18 @@
 
 # FID Plus
 
-Extensão de navegador que melhora a experiência no [Football Identity](https://footballidentity.org) com funcionalidades e helpers extras. Evoluindo continuamente com novas ideias.
+Extensão de navegador que melhora a experiência no [Football Identity](https://footballidentity.org) com ferramentas extras para jogadores. Evoluindo continuamente com novas ideias.
 
-Entre os recursos atuais: resolução automática dos quizzes diários (Qual é a camisa, Quem é quem, Squad Wordle, Estádios, Artilheiros, Wordle da Liga, Conexões da Liga e Quem joga no clube).
+## O que faz
+
+Adiciona um painel flutuante ao site que mostra, em tempo real, quanto você já ganhou na semana e quanto ainda pode ganhar:
+
+- **Ganhos fixos** — salário, patrocínio e bônus salarial
+- **Objetivos semanais** — progresso de cada missão, com indicação do que já foi concluído, está em andamento ou não pode mais ser alcançado nesta semana
+- **Marcos** — recompensas por completar 5 e 9 objetivos semanais
+- **Totais** — ganho atual vs. potencial restante da semana
+
+O painel pode ser minimizado, arrastado e lembra sua posição entre visitas. Basta estar logado no FID para usar.
 
 ## Pré-requisitos
 
