@@ -40,7 +40,7 @@ export default defineConfig({
   srcDir: 'src',
   manifest: () => ({
     name: 'FID Plus',
-    description: 'Automatiza a resolução dos quizzes diários do Football Identity.',
+    description: 'Painel flutuante com ganhos semanais, objetivos e marcos do Football Identity.',
     action: {
       default_icon: manifestIconMap,
     },
