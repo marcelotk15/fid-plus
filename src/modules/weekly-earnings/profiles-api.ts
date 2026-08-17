@@ -1,13 +1,11 @@
+import type { FetchLike, FetchResult } from '~/modules/shared/fetch.types'
+
 import { PROFILES, PROFILES_ENDPOINT } from '~/modules/shared/consts'
 import { buildSupabaseHeaders } from '~/modules/shared/supabase-headers'
 
-import type { FetchLike, FetchProfileError } from './contracts.types'
+import type { FetchProfileError } from './contracts.types'
 
-export type FetchProfileResult = {
-  data: string | null
-  error?: FetchProfileError
-  status?: number
-}
+export type FetchProfileResult = FetchResult<string | null, FetchProfileError>
 
 export function parseActivePlayerProfileId(value: unknown): string | null {
   if (typeof value !== 'object' || value === null) return null

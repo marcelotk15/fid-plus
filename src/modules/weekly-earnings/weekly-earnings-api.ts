@@ -1,6 +1,7 @@
+import type { FetchLike } from '~/modules/shared/fetch.types'
 import type { StorageLike } from '~/modules/shared/storage.types'
 
-import type { FetchLike, PlayerSalaryError } from './contracts.types'
+import type { PlayerSalaryError } from './contracts.types'
 import type { WeeklyEarningsCache, WeeklyEarningsCacheSlice } from './weekly-earnings-cache.types'
 import type { FetchWeeklyEarningsResult, WeeklyEarnings } from './weekly-earnings.types'
 

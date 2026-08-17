@@ -36,6 +36,16 @@ export const ACTIVE_SPONSORSHIPS = {
 
 export const ACTIVE_SPONSORSHIPS_ENDPOINT = `${SUPABASE.BASE_URL}${ACTIVE_SPONSORSHIPS.TABLE_PATH}` as const
 
+export const STORE_ITEMS = {
+  TABLE_PATH: '/rest/v1/store_items',
+  SELECT_FIELDS: 'id,name,price,bonuses,category,sort_order',
+  CATALOG: 'v2',
+  CATEGORY_EQUIPAVEL: 'v2_equipavel',
+  CATEGORY_ESTUDO: 'v2_estudo',
+} as const
+
+export const STORE_ITEMS_ENDPOINT = `${SUPABASE.BASE_URL}${STORE_ITEMS.TABLE_PATH}` as const
+
 export const WEEKLY_OBJECTIVES = {
   RPC: 'get_my_weekly_objectives',
 } as const

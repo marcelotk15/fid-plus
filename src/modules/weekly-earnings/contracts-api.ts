@@ -1,7 +1,9 @@
+import type { FetchLike } from '~/modules/shared/fetch.types'
+
 import { CONTRACTS_ENDPOINT } from '~/modules/shared/consts'
 import { buildSupabaseHeaders } from '~/modules/shared/supabase-headers'
 
-import type { FetchContractResult, FetchLike, PlayerContract } from './contracts.types'
+import type { FetchContractResult, PlayerContract } from './contracts.types'
 
 const SALARY_FIELDS = ['weekly_salary', 'salary', 'wage', 'monthly_salary', 'base_salary'] as const
 

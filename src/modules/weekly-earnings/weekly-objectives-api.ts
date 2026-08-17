@@ -1,7 +1,8 @@
+import type { FetchLike } from '~/modules/shared/fetch.types'
+
 import { WEEKLY_OBJECTIVES_ENDPOINT } from '~/modules/shared/consts'
 import { buildSupabaseHeaders } from '~/modules/shared/supabase-headers'
 
-import type { FetchLike } from './contracts.types'
 import type { FetchWeeklyObjectivesResult, WeeklyObjective, WeeklyObjectivesResponse } from './weekly-objectives.types'
 
 function parseObjective(value: unknown): WeeklyObjective | null {
