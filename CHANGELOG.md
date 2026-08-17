@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.0](https://github.com/marcelotk15/fid-plus/compare/v0.4.1...v0.5.0) (2026-08-17)
+
+
+### Features
+
+* add evolution items feature with UI and logic for item selection and bonuses ([52088fb](https://github.com/marcelotk15/fid-plus/commit/52088fb5c5447da477de0deaba1ade5f20de117a))
+* add new weekly objectives for game participation and performance ([25a8de7](https://github.com/marcelotk15/fid-plus/commit/25a8de70c74421a66d6d56685ff9a4315723fb51))
+* build items simulator ([c9345b6](https://github.com/marcelotk15/fid-plus/commit/c9345b6e31d755f7b5c19ec68e3000ef090d32d7))
+* build simulator and weekly earnings fixes ([62a5097](https://github.com/marcelotk15/fid-plus/commit/62a50973e142d4815cc821db6525ad04015dc0c4))
+
+
+### Bug Fixes
+
+* update weekly milestones to reflect new target of 10 objectives ([bf71484](https://github.com/marcelotk15/fid-plus/commit/bf71484abc90adedb249ae4957dd27318d2a2db2))
+* weekly earnings reports ([4d27e0b](https://github.com/marcelotk15/fid-plus/commit/4d27e0b35b44ce73eac16b9207370945aff68f2f))
+
 ## [0.4.1](https://github.com/marcelotk15/fid-plus/compare/v0.4.0...v0.4.1) (2026-07-28)
 
 
