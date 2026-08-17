@@ -1,3 +1,5 @@
+import type { FetchError, FetchResult } from '~/modules/shared/fetch.types'
+
 export type WeeklyObjectiveStatus = 'completed' | 'in_progress' | 'unreachable'
 
 export type WeeklyObjective = {
@@ -28,10 +30,6 @@ export type WeeklySalaryBonusView = {
   status: WeeklyObjectiveStatus
 }
 
-export type FetchWeeklyObjectivesError = 'http' | 'parse' | 'network'
+export type FetchWeeklyObjectivesError = FetchError
 
-export type FetchWeeklyObjectivesResult = {
-  data: WeeklyObjectivesResponse | null
-  error?: FetchWeeklyObjectivesError
-  status?: number
-}
+export type FetchWeeklyObjectivesResult = FetchResult<WeeklyObjectivesResponse | null>

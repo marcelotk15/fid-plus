@@ -1,3 +1,5 @@
+import type { FetchResult } from '~/modules/shared/fetch.types'
+
 import type { PlayerSalaryError } from './contracts.types'
 import type { WeeklyMilestonesState } from './weekly-milestones'
 import type { FetchWeeklyObjectivesError, WeeklyObjectiveView, WeeklySalaryBonusView } from './weekly-objectives.types'
@@ -13,8 +15,4 @@ export type WeeklyEarnings = {
   objectivesError?: FetchWeeklyObjectivesError
 }
 
-export type FetchWeeklyEarningsResult = {
-  data: WeeklyEarnings | null
-  error?: PlayerSalaryError
-  status?: number
-}
+export type FetchWeeklyEarningsResult = FetchResult<WeeklyEarnings | null, PlayerSalaryError>
