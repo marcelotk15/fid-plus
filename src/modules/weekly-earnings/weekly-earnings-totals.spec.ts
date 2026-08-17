@@ -114,7 +114,7 @@ describe('weekly-earnings-totals', () => {
       includeObjectives: true,
     })
 
-    expect(totals.potential).toBe(15_950 - 1000)
+    expect(totals.potential).toBe(15_950 - 1000 - 5000)
     expect(totals.earned).toBe(5450)
   })
 
@@ -124,10 +124,10 @@ describe('weekly-earnings-totals', () => {
       WEEK_START,
       dateOnWeekDay(4),
     ).map((objective, index) =>
-      index >= 8 ? { ...objective, status: 'unreachable' as const, isCompleted: false } : objective,
+      index >= 9 ? { ...objective, status: 'unreachable' as const, isCompleted: false } : objective,
     )
 
-    expect(getMaxPossibleCompletedCount(objectives)).toBe(8)
+    expect(getMaxPossibleCompletedCount(objectives)).toBe(9)
 
     const totals = computeWeeklyTotals({
       salary: 2500,
