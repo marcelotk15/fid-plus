@@ -1,13 +1,9 @@
+import type { FetchLike, FetchResult } from '~/modules/shared/fetch.types'
+
 import { ACTIVE_SPONSORSHIPS_ENDPOINT } from '~/modules/shared/consts'
 import { buildSupabaseHeaders } from '~/modules/shared/supabase-headers'
 
-import type { FetchLike } from './contracts.types'
-
-export type FetchSponsorshipResult = {
-  data: number
-  error?: 'http' | 'parse' | 'network'
-  status?: number
-}
+export type FetchSponsorshipResult = FetchResult<number>
 
 function parseWeeklyValue(value: unknown): number | null {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) return null

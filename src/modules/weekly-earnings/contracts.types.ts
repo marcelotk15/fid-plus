@@ -1,3 +1,5 @@
+import type { FetchError, FetchResult } from '~/modules/shared/fetch.types'
+
 export type PlayerContract = {
   id: string
   playerProfileId: string
@@ -5,16 +7,10 @@ export type PlayerContract = {
   createdAt: string
 }
 
-export type FetchLike = typeof fetch
+export type FetchContractError = FetchError | 'not_found'
 
-export type FetchContractError = 'http' | 'parse' | 'network' | 'not_found'
+export type FetchProfileError = FetchError | 'profile_not_found' | 'no_player_profile'
 
-export type FetchProfileError = 'http' | 'parse' | 'network' | 'profile_not_found' | 'no_player_profile'
-
-export type FetchContractResult = {
-  data: PlayerContract | null
-  error?: FetchContractError
-  status?: number
-}
+export type FetchContractResult = FetchResult<PlayerContract | null, FetchContractError>
 
 export type PlayerSalaryError = FetchContractError | FetchProfileError | 'no_token'

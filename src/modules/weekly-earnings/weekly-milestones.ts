@@ -5,8 +5,7 @@ export const WEEKLY_MILESTONE_REWARDS = {
 
 export const WEEKLY_MILESTONE_TARGETS = {
   milestone5: 5,
-  // API field is milestone_10_credited, but the reward unlocks at 9 objectives.
-  milestone10: 9,
+  milestone10: 10,
 } as const
 
 export type WeeklyMilestonesState = {
@@ -34,7 +33,7 @@ export function buildWeeklyMilestoneViews(milestones: WeeklyMilestonesState): We
     },
     {
       key: 'milestone10',
-      label: '9 objetivos semanais',
+      label: '10 objetivos semanais',
       rewardMoney: WEEKLY_MILESTONE_REWARDS.milestone10,
       targetCount: WEEKLY_MILESTONE_TARGETS.milestone10,
       isCompleted: milestones.milestone10Credited,
