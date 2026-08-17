@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.1](https://github.com/marcelotk15/fid-plus/compare/v0.4.0...v0.4.1) (2026-07-28)
+
+
+### Bug Fixes
+
+* docs ([d409e30](https://github.com/marcelotk15/fid-plus/commit/d409e3008f4ba542cffbc1ef1705700966be172b))
+* **docs:** align plugin descriptions with weekly earnings panel ([8190c22](https://github.com/marcelotk15/fid-plus/commit/8190c2251aff365b4debd41d915383ab8c1c1015))
+* update Firefox Web Store link in README ([559a8bb](https://github.com/marcelotk15/fid-plus/commit/559a8bb5fb2a75cfa66d81eec32f80ba285a9714))
+
 ## [0.4.0](https://github.com/marcelotk15/fid-plus/compare/v0.3.0...v0.4.0) (2026-07-27)
 
 

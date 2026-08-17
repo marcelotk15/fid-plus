@@ -16,6 +16,10 @@ const WEEKLY_OBJECTIVE_LABELS: Record<string, string> = {
   fidgram_interact_10_week: 'Interaja 10 vezes no fidgram',
   play_squad_quiz_week: 'Jogue o quiz',
   streak_7_days_week: 'Fique ativo 7 dias na semana (streak)',
+  confirm_presence_week: 'Confirme presença em uma partida',
+  match_udp_80_week: 'Alcance 80 de UDP na partida',
+  team_clean_sheet_week: 'Time sem sofrer gols na partida',
+  team_goals_2_week: 'Time marque 2 gols na partida',
 }
 
 function formatObjectiveKeyFallback(key: string): string {
