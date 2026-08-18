@@ -9,6 +9,8 @@ import {
   restoreAttributeSimulation,
 } from './attribute-dom'
 import { EvolutionItemsPanel } from './evolution-items-panel'
+import { readEvolutionItemsPanelState } from './evolution-items-panel.storage'
+import { ensureEvolutionItemsPanelStyles } from './evolution-items-panel.styles'
 import { EMPTY_SELECTION, type SelectedItems } from './item-selection'
 
 const EVOLUTION_PATHNAME = '/player/evolution'
@@ -70,6 +72,11 @@ function observeParent(parent: Element, grid: Element, host: HTMLElement): void 
   parentObserver.observe(parent, { childList: true })
 }
 
+function syncHostOpenState(host: HTMLElement): void {
+  const open = readEvolutionItemsPanelState()?.open ?? true
+  host.setAttribute('data-fid-plus-panel-open', open ? 'true' : 'false')
+}
+
 function renderPanel(host: HTMLElement): ReactDOM.Root {
   const root = ReactDOM.createRoot(host)
 
@@ -91,6 +98,7 @@ function mount(grid: Element): void {
   }
 
   const host = ensureHostBeforeGrid(grid, mounted?.host ?? document.getElementById(EVOLUTION_ITEMS_HOST_ID))
+  syncHostOpenState(host)
 
   if (mounted && mounted.host === host) {
     if (grid.parentElement) observeParent(grid.parentElement, grid, host)
@@ -148,6 +156,7 @@ function scheduleSync(): void {
 export function initEvolutionItems(): void {
   if (documentObserver) return
 
+  ensureEvolutionItemsPanelStyles()
   documentObserver = new MutationObserver(scheduleSync)
   documentObserver.observe(document.documentElement, { childList: true, subtree: true })
   syncMount()

@@ -8,6 +8,9 @@ import { formatMoney } from '~/modules/weekly-earnings/format-currency'
 
 import type { StoreItem, StoreItemBonus } from './store-items.types'
 
+import { EVOLUTION_ITEMS_HOST_ID } from './attribute-dom'
+import { readEvolutionItemsPanelState, writeEvolutionItemsPanelState } from './evolution-items-panel.storage'
+import { ensureEvolutionItemsPanelStyles } from './evolution-items-panel.styles'
 import {
   EMPTY_SELECTION,
   filterItemsByName,
@@ -50,6 +53,28 @@ function GearIcon() {
         strokeLinejoin="round"
       />
       <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  )
+}
+
+function ChevronDownIcon({ className, open }: { className?: string; open: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      data-fid-plus-chevron
+      data-open={open ? 'true' : 'false'}
+      aria-hidden
+    >
+      <path d="m6 9 6 6 6-6" />
     </svg>
   )
 }
@@ -102,7 +127,10 @@ export function EvolutionItemsPanel({
   initialSelected = EMPTY_SELECTION,
   onSelectionChange,
 }: EvolutionItemsPanelProps) {
+  ensureEvolutionItemsPanelStyles()
+
   const { items, loading, error } = useStoreItems()
+  const [open, setOpen] = useState(() => readEvolutionItemsPanelState()?.open ?? true)
   const [tab, setTab] = useState<Tab>('equipavel')
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query)
@@ -115,6 +143,28 @@ export function EvolutionItemsPanel({
     onSelectionChange(selected, mergeBonuses(resolveSelectedItems(items, selected)))
   }, [items, onSelectionChange, selected])
 
+  useEffect(() => {
+    document.getElementById(EVOLUTION_ITEMS_HOST_ID)?.setAttribute('data-fid-plus-panel-open', open ? 'true' : 'false')
+  }, [open])
+
+  function persistOpen(nextOpen: boolean) {
+    writeEvolutionItemsPanelState(globalThis.localStorage, { open: nextOpen })
+    document
+      .getElementById(EVOLUTION_ITEMS_HOST_ID)
+      ?.setAttribute('data-fid-plus-panel-open', nextOpen ? 'true' : 'false')
+  }
+
+  function handleToggleOpen(event: { preventDefault: () => void; stopPropagation: () => void }) {
+    event.preventDefault()
+    event.stopPropagation()
+
+    setOpen((current) => {
+      const nextOpen = !current
+      persistOpen(nextOpen)
+      return nextOpen
+    })
+  }
+
   function handleToggle(item: StoreItem) {
     const slot = item.category === STORE_ITEMS.CATEGORY_EQUIPAVEL ? 'equipavel' : 'estudo'
     setSelected((current) => selectSlot(current, slot, item.id))
@@ -123,77 +173,93 @@ export function EvolutionItemsPanel({
   return (
     <div data-testid="evolution-items-panel" className="stat-card">
       <div className="mb-3">
-        <div className="flex items-center gap-2">
-          <GearIcon />
-          <span className="font-display text-sm font-semibold">Simular itens</span>
-        </div>
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-between gap-2 border-0 bg-transparent p-0 text-left"
+          aria-expanded={open}
+          onClick={handleToggleOpen}
+        >
+          <span className="flex items-center gap-2">
+            <GearIcon />
+            <span className="font-display text-sm font-semibold">Simular itens</span>
+          </span>
+          <ChevronDownIcon className="lucide lucide-chevron-down h-4 w-4 text-muted-foreground" open={open} />
+        </button>
         <p className="mt-0.5 mb-0 text-[10px] text-emerald-400">Oferecimento de {APP_NAME}</p>
       </div>
-      <p className="mb-3 text-xs text-muted-foreground">
+      <p className={cn('text-xs text-muted-foreground', open ? 'mb-3' : 'mb-0')}>
         Simulação local: um equipável e um estudo por vez. Não compra nem equipa no jogo.
       </p>
 
-      <div className="mb-3 flex gap-0 border-b border-border">
-        <button
-          type="button"
-          className={cn(
-            'relative min-h-11 rounded-none border border-transparent border-b-border bg-transparent px-4 py-2 font-display text-sm font-bold',
-            tab === 'equipavel'
-              ? 'z-10 border-border border-b-background bg-background text-foreground'
-              : 'text-muted-foreground hover:text-foreground',
-          )}
-          aria-selected={tab === 'equipavel'}
-          onClick={() => setTab('equipavel')}
-        >
-          Equipável
-        </button>
-        <button
-          type="button"
-          className={cn(
-            'relative min-h-11 rounded-none border border-transparent border-b-border bg-transparent px-4 py-2 font-display text-sm font-bold',
-            tab === 'estudo'
-              ? 'z-10 border-border border-b-background bg-background text-foreground'
-              : 'text-muted-foreground hover:text-foreground',
-          )}
-          aria-selected={tab === 'estudo'}
-          onClick={() => setTab('estudo')}
-        >
-          Estudo
-        </button>
-      </div>
+      <div
+        data-testid="evolution-items-panel-content"
+        data-fid-plus-body
+        hidden={!open}
+        aria-hidden={!open}
+        inert={!open}
+      >
+        <div className="mb-3 flex gap-0 border-b border-border">
+          <button
+            type="button"
+            className={cn(
+              'relative min-h-11 rounded-none border border-transparent border-b-border bg-transparent px-4 py-2 font-display text-sm font-bold',
+              tab === 'equipavel'
+                ? 'z-10 border-border border-b-background bg-background text-foreground'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+            aria-selected={tab === 'equipavel'}
+            onClick={() => setTab('equipavel')}
+          >
+            Equipável
+          </button>
+          <button
+            type="button"
+            className={cn(
+              'relative min-h-11 rounded-none border border-transparent border-b-border bg-transparent px-4 py-2 font-display text-sm font-bold',
+              tab === 'estudo'
+                ? 'z-10 border-border border-b-background bg-background text-foreground'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+            aria-selected={tab === 'estudo'}
+            onClick={() => setTab('estudo')}
+          >
+            Estudo
+          </button>
+        </div>
 
-      {loading ? (
-        <p className="m-0 text-sm text-muted-foreground">Carregando itens...</p>
-      ) : error ? (
-        <p className="m-0 text-sm text-muted-foreground">{getErrorMessage(error)}</p>
-      ) : (
-        <>
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Buscar item..."
-            aria-label="Buscar modificador"
-            className="mb-3 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-          />
-          {categoryItems.length === 0 ? (
-            <p className="m-0 text-sm text-muted-foreground">Nenhum item disponível nesta categoria.</p>
-          ) : visibleItems.length === 0 ? (
-            <p className="m-0 text-sm text-muted-foreground">Nenhum item encontrado.</p>
-          ) : (
-            <div className="max-h-72 space-y-1 overflow-auto">
-              {visibleItems.map((item) => (
-                <ItemRow
-                  key={item.id}
-                  item={item}
-                  selected={item.id === selected[tab]}
-                  onToggle={() => handleToggle(item)}
-                />
-              ))}
-            </div>
-          )}
-        </>
-      )}
+        {loading ? (
+          <p className="m-0 text-sm text-muted-foreground">Carregando itens...</p>
+        ) : error ? (
+          <p className="m-0 text-sm text-muted-foreground">{getErrorMessage(error)}</p>
+        ) : (
+          <>
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Buscar item..."
+              aria-label="Buscar modificador"
+              className="mb-3 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            />
+            {categoryItems.length === 0 ? (
+              <p className="m-0 text-sm text-muted-foreground">Nenhum item disponível nesta categoria.</p>
+            ) : visibleItems.length === 0 ? (
+              <p className="m-0 text-sm text-muted-foreground">Nenhum item encontrado.</p>
+            ) : (
+              <div className="max-h-72 space-y-1 overflow-auto">
+                {visibleItems.map((item) => (
+                  <ItemRow
+                    key={item.id}
+                    item={item}
+                    selected={item.id === selected[tab]}
+                    onToggle={() => handleToggle(item)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   )
 }
