@@ -85,6 +85,10 @@ function getDeltaText(grid: HTMLElement, attr: string): string | null {
   return getDeltaSlot(grid, attr)?.textContent ?? null
 }
 
+function sim(values: Record<string, number>, deltas: Record<string, number> = values) {
+  return { values, deltas }
+}
+
 describe('attribute-dom', () => {
   afterEach(() => {
     document.body.replaceChildren()
@@ -93,7 +97,7 @@ describe('attribute-dom', () => {
   it('applies bonuses on top of the current displayed values', () => {
     const grid = createGrid()
 
-    applyAttributeSimulation(grid, { agilidade: 5, forca: -3 })
+    applyAttributeSimulation(grid, sim({ agilidade: 5, forca: -3 }))
 
     expect(getValueText(grid, 'agilidade')).toBe('76.55')
     expect(getDeltaText(grid, 'agilidade')).toBe('+5')
@@ -107,7 +111,7 @@ describe('attribute-dom', () => {
     const parent = valueEl?.parentElement
     const nativeSlot = valueEl?.nextElementSibling
 
-    applyAttributeSimulation(grid, { agilidade: 5 })
+    applyAttributeSimulation(grid, sim({ agilidade: 5 }))
 
     expect(nativeSlot).toBeInstanceOf(HTMLElement)
     expect(nativeSlot).toHaveProperty('textContent', '+5')
@@ -120,17 +124,26 @@ describe('attribute-dom', () => {
   it('adds the item bonus to a visible native slot', () => {
     const grid = createGrid()
 
-    applyAttributeSimulation(grid, { velocidade: 5 })
+    applyAttributeSimulation(grid, sim({ velocidade: 5 }))
 
     expect(getValueText(grid, 'velocidade')).toBe('76.55')
-    expect(getDeltaText(grid, 'velocidade')).toBe('+13')
+    expect(getDeltaText(grid, 'velocidade')).toBe('+5')
+  })
+
+  it('subtracts the equipped bonus from the displayed value and shows the selected item delta', () => {
+    const grid = createGrid()
+
+    applyAttributeSimulation(grid, { values: { velocidade: 1 }, deltas: { velocidade: 3 } })
+
+    expect(getValueText(grid, 'velocidade')).toBe('72.55')
+    expect(getDeltaText(grid, 'velocidade')).toBe('+3')
   })
 
   it('moves width-based progress bars to the simulated value', () => {
     const grid = createGrid()
     const bar = grid.querySelector('[data-testid="agilidade-bar"]') as HTMLElement
 
-    applyAttributeSimulation(grid, { agilidade: 5 })
+    applyAttributeSimulation(grid, sim({ agilidade: 5 }))
 
     expect(bar.style.width).toBe('76.55%')
     expect(bar.hasAttribute(SIM_BAR_ATTR)).toBe(true)
@@ -140,7 +153,7 @@ describe('attribute-dom', () => {
     const grid = createGrid()
     const bar = grid.querySelector('[data-testid="velocidade-bar"]') as HTMLElement
 
-    applyAttributeSimulation(grid, { velocidade: 5 })
+    applyAttributeSimulation(grid, sim({ velocidade: 5 }))
 
     expect(bar.style.transform).toBe('translateX(-23.45%)')
   })
@@ -148,8 +161,8 @@ describe('attribute-dom', () => {
   it('keeps the original value when reapplying the same bonuses', () => {
     const grid = createGrid()
 
-    applyAttributeSimulation(grid, { agilidade: 5 })
-    applyAttributeSimulation(grid, { agilidade: 5 })
+    applyAttributeSimulation(grid, sim({ agilidade: 5 }))
+    applyAttributeSimulation(grid, sim({ agilidade: 5 }))
 
     expect(getValueText(grid, 'agilidade')).toBe('76.55')
     expect(grid.querySelectorAll(`[${SIM_DELTA_ATTR}]`)).toHaveLength(1)
@@ -162,7 +175,7 @@ describe('attribute-dom', () => {
     const agilidadeBar = grid.querySelector('[data-testid="agilidade-bar"]') as HTMLElement
     const velocidadeBar = grid.querySelector('[data-testid="velocidade-bar"]') as HTMLElement
 
-    applyAttributeSimulation(grid, { agilidade: 5, forca: -3, velocidade: 5 })
+    applyAttributeSimulation(grid, sim({ agilidade: 5, forca: -3, velocidade: 5 }))
     restoreAttributeSimulation(grid)
 
     expect(getValueText(grid, 'agilidade')).toBe('71.55')
@@ -180,7 +193,7 @@ describe('attribute-dom', () => {
   it('treats a react reset as a new original and reapplies', () => {
     const grid = createGrid()
 
-    applyAttributeSimulation(grid, { agilidade: 5 })
+    applyAttributeSimulation(grid, sim({ agilidade: 5 }))
 
     const valueEl = findAttributeValueElement(grid, 'agilidade')
     expect(valueEl).not.toBeNull()
@@ -200,7 +213,7 @@ describe('attribute-dom', () => {
     bar.removeAttribute(SIM_BAR_ATTR)
     bar.style.width = '63.55%'
 
-    applyAttributeSimulation(grid, { agilidade: 5 })
+    applyAttributeSimulation(grid, sim({ agilidade: 5 }))
 
     expect(getValueText(grid, 'agilidade')).toBe('68.55')
     expect(getDeltaText(grid, 'agilidade')).toBe('+5')

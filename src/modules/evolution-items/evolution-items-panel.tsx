@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { getAttributeLabel } from '~/modules/shared/attribute-labels'
 import { APP_NAME, STORE_ITEMS } from '~/modules/shared/consts'
@@ -13,20 +13,26 @@ import { readEvolutionItemsPanelState, writeEvolutionItemsPanelState } from './e
 import { ensureEvolutionItemsPanelStyles } from './evolution-items-panel.styles'
 import {
   EMPTY_SELECTION,
+  EMPTY_SIMULATION,
   filterItemsByName,
-  mergeBonuses,
-  resolveSelectedItems,
+  hasSelection,
+  matchLoadoutToStoreIds,
+  mergeLoadoutItems,
+  pinActiveItem,
   selectSlot,
+  simulationBonuses,
+  type AttributeSimulation,
   type SelectedItems,
 } from './item-selection'
 import { partitionStoreItems } from './store-items-api'
+import { usePlayerLoadout } from './use-player-loadout'
 import { useStoreItems } from './use-store-items'
 
 type Tab = 'equipavel' | 'estudo'
 
 type EvolutionItemsPanelProps = {
   initialSelected?: SelectedItems
-  onSelectionChange: (selected: SelectedItems, bonuses: Record<string, number>) => void
+  onSelectionChange: (selected: SelectedItems, simulation: AttributeSimulation) => void
 }
 
 function getErrorMessage(error: NonNullable<ReturnType<typeof useStoreItems>['error']>): string {
@@ -95,7 +101,17 @@ function BonusChip({ bonus }: { bonus: StoreItemBonus }) {
   )
 }
 
-function ItemRow({ item, selected, onToggle }: { item: StoreItem; selected: boolean; onToggle: () => void }) {
+function ItemRow({
+  item,
+  selected,
+  active,
+  onToggle,
+}: {
+  item: StoreItem
+  selected: boolean
+  active: boolean
+  onToggle: () => void
+}) {
   return (
     <button
       type="button"
@@ -107,7 +123,10 @@ function ItemRow({ item, selected, onToggle }: { item: StoreItem; selected: bool
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <span className="min-w-0 font-display text-sm font-semibold">{item.name}</span>
+        <span className="flex min-w-0 flex-wrap items-baseline gap-2">
+          <span className="font-display text-sm font-semibold">{item.name}</span>
+          {active ? <span className="text-[10px] font-bold text-emerald-600">atual ativo na build</span> : null}
+        </span>
         <span className="shrink-0 text-xs font-display font-bold tabular-nums text-muted-foreground">
           {formatMoney(item.price)}
         </span>
@@ -130,18 +149,30 @@ export function EvolutionItemsPanel({
   ensureEvolutionItemsPanelStyles()
 
   const { items, loading, error } = useStoreItems()
+  const { loadout, loading: loadoutLoading } = usePlayerLoadout()
   const [open, setOpen] = useState(() => readEvolutionItemsPanelState()?.open ?? true)
   const [tab, setTab] = useState<Tab>('equipavel')
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query)
-  const [selected, setSelected] = useState<SelectedItems>(initialSelected)
-  const { equipavel, estudo } = partitionStoreItems(items)
+  const [userSelected, setUserSelected] = useState<SelectedItems | null>(() =>
+    hasSelection(initialSelected) ? initialSelected : null,
+  )
+  const waiting = loading || loadoutLoading
+  const catalogItems = useMemo(() => mergeLoadoutItems(items, loadout), [items, loadout])
+  const equipped = useMemo(() => matchLoadoutToStoreIds(loadout), [loadout])
+  const selected = userSelected ?? equipped
+  const { equipavel, estudo } = partitionStoreItems(catalogItems)
   const categoryItems = tab === 'equipavel' ? equipavel : estudo
-  const visibleItems = filterItemsByName(categoryItems, debouncedQuery)
+  const visibleItems = pinActiveItem(filterItemsByName(categoryItems, debouncedQuery), equipped[tab])
 
   useEffect(() => {
-    onSelectionChange(selected, mergeBonuses(resolveSelectedItems(items, selected)))
-  }, [items, onSelectionChange, selected])
+    if (waiting) {
+      onSelectionChange(selected, EMPTY_SIMULATION)
+      return
+    }
+
+    onSelectionChange(selected, simulationBonuses(catalogItems, selected, equipped))
+  }, [catalogItems, equipped, onSelectionChange, selected, waiting])
 
   useEffect(() => {
     document.getElementById(EVOLUTION_ITEMS_HOST_ID)?.setAttribute('data-fid-plus-panel-open', open ? 'true' : 'false')
@@ -167,7 +198,7 @@ export function EvolutionItemsPanel({
 
   function handleToggle(item: StoreItem) {
     const slot = item.category === STORE_ITEMS.CATEGORY_EQUIPAVEL ? 'equipavel' : 'estudo'
-    setSelected((current) => selectSlot(current, slot, item.id))
+    setUserSelected(selectSlot(selected, slot, item.id))
   }
 
   return (
@@ -227,7 +258,7 @@ export function EvolutionItemsPanel({
           </button>
         </div>
 
-        {loading ? (
+        {waiting ? (
           <p className="m-0 text-sm text-muted-foreground">Carregando itens...</p>
         ) : error ? (
           <p className="m-0 text-sm text-muted-foreground">{getErrorMessage(error)}</p>
@@ -252,6 +283,7 @@ export function EvolutionItemsPanel({
                     key={item.id}
                     item={item}
                     selected={item.id === selected[tab]}
+                    active={item.id === equipped[tab]}
                     onToggle={() => handleToggle(item)}
                   />
                 ))}

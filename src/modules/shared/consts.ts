@@ -52,6 +52,12 @@ export const STORE_ITEMS = {
 
 export const STORE_ITEMS_ENDPOINT = `${SUPABASE.BASE_URL}${STORE_ITEMS.TABLE_PATH}` as const
 
+export const LOADOUT = {
+  RPC: 'v2_get_loadout',
+} as const
+
+export const LOADOUT_ENDPOINT = `${SUPABASE.BASE_URL}${SUPABASE.RPC_PATH_PREFIX}/${LOADOUT.RPC}` as const
+
 export const WEEKLY_OBJECTIVES = {
   RPC: 'get_my_weekly_objectives',
 } as const

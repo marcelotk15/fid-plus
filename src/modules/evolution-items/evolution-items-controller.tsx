@@ -11,7 +11,12 @@ import {
 import { EvolutionItemsPanel } from './evolution-items-panel'
 import { readEvolutionItemsPanelState } from './evolution-items-panel.storage'
 import { ensureEvolutionItemsPanelStyles } from './evolution-items-panel.styles'
-import { EMPTY_SELECTION, type SelectedItems } from './item-selection'
+import {
+  EMPTY_SELECTION,
+  EMPTY_SIMULATION,
+  type AttributeSimulation,
+  type SelectedItems,
+} from './item-selection'
 
 const EVOLUTION_PATHNAME = '/player/evolution'
 
@@ -22,7 +27,7 @@ type MountedUi = {
 
 let mounted: MountedUi | null = null
 let selected: SelectedItems = { ...EMPTY_SELECTION }
-let bonuses: Record<string, number> = {}
+let simulation: AttributeSimulation = EMPTY_SIMULATION
 let documentObserver: MutationObserver | null = null
 let parentObserver: MutationObserver | null = null
 let gridObserver: MutationObserver | null = null
@@ -41,13 +46,13 @@ function applyCurrentSimulation(grid: ParentNode): void {
   if (applying) return
 
   applying = true
-  applyAttributeSimulation(grid, bonuses)
+  applyAttributeSimulation(grid, simulation)
   applying = false
 }
 
-function handleSelectionChange(nextSelected: SelectedItems, nextBonuses: Record<string, number>): void {
+function handleSelectionChange(nextSelected: SelectedItems, nextSimulation: AttributeSimulation): void {
   selected = nextSelected
-  bonuses = nextBonuses
+  simulation = nextSimulation
 
   const grid = getGrid()
   if (grid) applyCurrentSimulation(grid)
@@ -172,5 +177,5 @@ export function destroyEvolutionItems(): void {
   documentObserver = null
   unmountUi()
   selected = { ...EMPTY_SELECTION }
-  bonuses = {}
+  simulation = EMPTY_SIMULATION
 }

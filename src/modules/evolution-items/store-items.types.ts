@@ -13,3 +13,8 @@ export type StoreItem = {
   category: StoreItemCategory
   sortOrder: number
 }
+
+export type PlayerLoadout = {
+  equipavel: StoreItem | null
+  estudo: StoreItem | null
+}

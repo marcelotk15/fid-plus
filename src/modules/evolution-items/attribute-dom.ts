@@ -65,10 +65,6 @@ export function findAttributeValueElement(grid: ParentNode, attr: string): HTMLE
   return null
 }
 
-function parseBonusDelta(text: string): number | null {
-  return parseDisplayedValue(text)
-}
-
 function valuesMatch(left: number, right: number): boolean {
   return Math.abs(left - right) < VALUE_MATCH_EPSILON
 }
@@ -124,19 +120,6 @@ function removeOrphanDeltas(valueEl: HTMLElement): boolean {
   return removed
 }
 
-function readNativeBonus(slot: HTMLElement): number {
-  const originalClass = slot.getAttribute(ORIGINAL_DELTA_CLASS_ATTR)
-  const originalText = slot.getAttribute(ORIGINAL_DELTA_TEXT_ATTR)
-
-  if (originalClass !== null || originalText !== null) {
-    if ((originalClass ?? '').split(/\s+/).includes('invisible')) return 0
-    return parseBonusDelta(originalText ?? '') ?? 0
-  }
-
-  if (slot.classList.contains('invisible')) return 0
-  return parseBonusDelta(slot.textContent ?? '') ?? 0
-}
-
 function simulatedSlotClassName(total: number, originalClass: string): string {
   const tokens = originalClass.split(/\s+/).filter((token) => {
     return token.length > 0 && token !== 'invisible' && token !== 'text-emerald-400' && token !== 'text-destructive'
@@ -178,7 +161,7 @@ function ensureBonusSlot(valueEl: HTMLElement): HTMLElement | null {
   return slot
 }
 
-function upsertDelta(valueEl: HTMLElement, itemBonus: number): boolean {
+function upsertDelta(valueEl: HTMLElement, displayBonus: number): boolean {
   removeOrphanDeltas(valueEl)
 
   const slot = ensureBonusSlot(valueEl)
@@ -186,9 +169,8 @@ function upsertDelta(valueEl: HTMLElement, itemBonus: number): boolean {
 
   rememberSlotOriginal(slot)
 
-  const total = readNativeBonus(slot) + itemBonus
-  const nextText = total === 0 ? (slot.getAttribute(ORIGINAL_DELTA_TEXT_ATTR) ?? '') : formatBonusDelta(total)
-  const nextClass = simulatedSlotClassName(total, slot.getAttribute(ORIGINAL_DELTA_CLASS_ATTR) ?? slot.className)
+  const nextText = displayBonus === 0 ? (slot.getAttribute(ORIGINAL_DELTA_TEXT_ATTR) ?? '') : formatBonusDelta(displayBonus)
+  const nextClass = simulatedSlotClassName(displayBonus, slot.getAttribute(ORIGINAL_DELTA_CLASS_ATTR) ?? slot.className)
 
   let changed = false
 
@@ -361,7 +343,12 @@ function readOriginalValue(valueEl: HTMLElement, displayed: number): number {
   return displayed
 }
 
-export function applyAttributeSimulation(grid: ParentNode, bonuses: Record<string, number>): boolean {
+type AttributeSimulation = {
+  values: Record<string, number>
+  deltas: Record<string, number>
+}
+
+export function applyAttributeSimulation(grid: ParentNode, simulation: AttributeSimulation): boolean {
   let changed = false
 
   for (const attr of Object.keys(ATTRIBUTE_LABELS)) {
@@ -372,9 +359,9 @@ export function applyAttributeSimulation(grid: ParentNode, bonuses: Record<strin
     if (displayed === null) continue
 
     const original = readOriginalValue(valueEl, displayed)
-    const bonus = bonuses[attr] ?? 0
+    const simulating = Object.hasOwn(simulation.values, attr) || Object.hasOwn(simulation.deltas, attr)
 
-    if (bonus === 0) {
+    if (!simulating) {
       if (valueEl.hasAttribute(ORIGINAL_VALUE_ATTR) || valueEl.hasAttribute(SIMULATED_VALUE_ATTR)) {
         const formatted = formatAttributeValue(original)
 
@@ -392,7 +379,9 @@ export function applyAttributeSimulation(grid: ParentNode, bonuses: Record<strin
       continue
     }
 
-    const simulated = original + bonus
+    const valueDelta = simulation.values[attr] ?? 0
+    const displayDelta = simulation.deltas[attr] ?? 0
+    const simulated = original + valueDelta
     const formatted = formatAttributeValue(simulated)
 
     if (valueEl.textContent !== formatted) {
@@ -403,7 +392,7 @@ export function applyAttributeSimulation(grid: ParentNode, bonuses: Record<strin
     valueEl.setAttribute(ORIGINAL_VALUE_ATTR, formatAttributeValue(original))
     valueEl.setAttribute(SIMULATED_VALUE_ATTR, formatted)
 
-    if (upsertDelta(valueEl, bonus)) changed = true
+    if (upsertDelta(valueEl, displayDelta)) changed = true
     if (applyBar(valueEl, original, simulated)) changed = true
   }
 
@@ -411,7 +400,7 @@ export function applyAttributeSimulation(grid: ParentNode, bonuses: Record<strin
 }
 
 export function restoreAttributeSimulation(grid: ParentNode): void {
-  applyAttributeSimulation(grid, {})
+  applyAttributeSimulation(grid, { values: {}, deltas: {} })
 }
 
 export function ensureHostBeforeGrid(grid: Element, existingHost?: HTMLElement | null): HTMLElement {
