@@ -30,6 +30,12 @@ export const PROFILES = {
 
 export const PROFILES_ENDPOINT = `${SUPABASE.BASE_URL}${PROFILES.TABLE_PATH}` as const
 
+export const PLAYER_PROFILES = {
+  TABLE_PATH: '/rest/v1/player_profiles',
+} as const
+
+export const PLAYER_PROFILES_ENDPOINT = `${SUPABASE.BASE_URL}${PLAYER_PROFILES.TABLE_PATH}` as const
+
 export const ACTIVE_SPONSORSHIPS = {
   TABLE_PATH: '/rest/v1/active_sponsorships',
 } as const
@@ -66,6 +72,11 @@ export function weeklyEarningsCacheKey(userId: string): string {
 export const MESSAGE_SOURCE = {
   DAILY_PACK: 'fid-plus:daily-pack',
   WEEKLY_EARNINGS: 'fid-plus:weekly-earnings',
+  STORE: 'fid-plus:store',
+} as const
+
+export const STORE_MESSAGE_TYPE = {
+  PLAYER_PROFILE: 'store:player-profile',
 } as const
 
 export const WEEKLY_EARNINGS_MESSAGE_TYPE = {
