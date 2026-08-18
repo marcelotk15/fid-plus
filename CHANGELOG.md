@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.0](https://github.com/marcelotk15/fid-plus/compare/v0.5.0...v0.6.0) (2026-08-18)
+
+
+### Features
+
+* implement store balance management and player profile integration ([05e90b7](https://github.com/marcelotk15/fid-plus/commit/05e90b77afafadc78c99d3e08dc6d0a218c7f4b8))
+* implement store balance management and player profile integration ([7481f83](https://github.com/marcelotk15/fid-plus/commit/7481f83dbe4177c71835e598bc177cb0dfc7613b))
+* new version ([5b7c817](https://github.com/marcelotk15/fid-plus/commit/5b7c8171f22f4f50fdec851ca10a61572a85e354))
+
 ## [0.5.0](https://github.com/marcelotk15/fid-plus/compare/v0.4.1...v0.5.0) (2026-08-17)
 
 
