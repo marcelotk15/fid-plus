@@ -198,7 +198,8 @@ function upsertDelta(valueEl: HTMLElement, displayBonus: number): boolean {
 
   rememberSlotOriginal(slot)
 
-  const nextText = displayBonus === 0 ? (slot.getAttribute(ORIGINAL_DELTA_TEXT_ATTR) ?? '') : formatBonusDelta(displayBonus)
+  const nextText =
+    displayBonus === 0 ? (slot.getAttribute(ORIGINAL_DELTA_TEXT_ATTR) ?? '') : formatBonusDelta(displayBonus)
   const nextClass = simulatedSlotClassName(displayBonus, slot.getAttribute(ORIGINAL_DELTA_CLASS_ATTR) ?? slot.className)
 
   let changed = false

@@ -3,12 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { LOADOUT_ENDPOINT } from '~/modules/shared/consts'
 import { buildSupabaseHeaders } from '~/modules/shared/supabase-headers'
 
-import {
-  fetchLoadoutWithMeta,
-  fetchPlayerLoadoutWithMeta,
-  parseLoadoutBody,
-  parseLoadoutSlotItem,
-} from './loadout-api'
+import { fetchLoadoutWithMeta, fetchPlayerLoadoutWithMeta, parseLoadoutBody, parseLoadoutSlotItem } from './loadout-api'
 
 const PLAYER_PROFILE_ID = 'c5075e8e-e5cc-455d-a566-7b1cacb2341b'
 const USER_ID = '333c3d91-402f-4814-938f-0d185f2ddc28'

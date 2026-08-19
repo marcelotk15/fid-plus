@@ -11,12 +11,7 @@ import {
 import { EvolutionItemsPanel } from './evolution-items-panel'
 import { readEvolutionItemsPanelState } from './evolution-items-panel.storage'
 import { ensureEvolutionItemsPanelStyles } from './evolution-items-panel.styles'
-import {
-  EMPTY_SELECTION,
-  EMPTY_SIMULATION,
-  type AttributeSimulation,
-  type SelectedItems,
-} from './item-selection'
+import { EMPTY_SELECTION, EMPTY_SIMULATION, type AttributeSimulation, type SelectedItems } from './item-selection'
 
 const EVOLUTION_PATHNAME = '/player/evolution'
 

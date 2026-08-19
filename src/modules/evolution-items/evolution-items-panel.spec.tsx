@@ -205,7 +205,9 @@ describe('EvolutionItemsPanel', () => {
       other.click()
     })
 
-    const nextRows = [...document.querySelectorAll('[data-testid="evolution-items-panel-content"] button[aria-pressed]')]
+    const nextRows = [
+      ...document.querySelectorAll('[data-testid="evolution-items-panel-content"] button[aria-pressed]'),
+    ]
 
     expect(nextRows[0]?.textContent).toContain('Chuteira Veloz')
     expect(nextRows[0]?.textContent).toContain('atual ativo na build')

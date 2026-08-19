@@ -146,11 +146,7 @@ export function simulationBonuses(
   const displayTotals = mergeBonuses(resolveSelectedItems(items, replacement))
   const values: Record<string, AttrBonusDelta> = {}
   const deltas: Record<string, AttrBonusDelta> = {}
-  const attrs = new Set([
-    ...Object.keys(selectedTotals),
-    ...Object.keys(equippedTotals),
-    ...Object.keys(displayTotals),
-  ])
+  const attrs = new Set([...Object.keys(selectedTotals), ...Object.keys(equippedTotals), ...Object.keys(displayTotals)])
 
   for (const attr of attrs) {
     const selectedBonus = selectedTotals[attr] ?? emptyDelta()
