@@ -17,7 +17,7 @@ export type StoreItemsState = {
 export function useStoreItems(): StoreItemsState {
   const { isLoggedIn, accessToken } = useAuthUser()
   const [items, setItems] = useState<StoreItem[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(() => Boolean(isLoggedIn && accessToken))
   const [error, setError] = useState<FetchError | 'no_token' | null>(null)
   const fetchIdRef = useRef(0)
 

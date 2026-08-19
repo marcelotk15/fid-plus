@@ -9,7 +9,9 @@ import {
   restoreAttributeSimulation,
 } from './attribute-dom'
 import { EvolutionItemsPanel } from './evolution-items-panel'
-import { EMPTY_SELECTION, type SelectedItems } from './item-selection'
+import { readEvolutionItemsPanelState } from './evolution-items-panel.storage'
+import { ensureEvolutionItemsPanelStyles } from './evolution-items-panel.styles'
+import { EMPTY_SELECTION, EMPTY_SIMULATION, type AttributeSimulation, type SelectedItems } from './item-selection'
 
 const EVOLUTION_PATHNAME = '/player/evolution'
 
@@ -20,7 +22,7 @@ type MountedUi = {
 
 let mounted: MountedUi | null = null
 let selected: SelectedItems = { ...EMPTY_SELECTION }
-let bonuses: Record<string, number> = {}
+let simulation: AttributeSimulation = EMPTY_SIMULATION
 let documentObserver: MutationObserver | null = null
 let parentObserver: MutationObserver | null = null
 let gridObserver: MutationObserver | null = null
@@ -39,13 +41,13 @@ function applyCurrentSimulation(grid: ParentNode): void {
   if (applying) return
 
   applying = true
-  applyAttributeSimulation(grid, bonuses)
+  applyAttributeSimulation(grid, simulation)
   applying = false
 }
 
-function handleSelectionChange(nextSelected: SelectedItems, nextBonuses: Record<string, number>): void {
+function handleSelectionChange(nextSelected: SelectedItems, nextSimulation: AttributeSimulation): void {
   selected = nextSelected
-  bonuses = nextBonuses
+  simulation = nextSimulation
 
   const grid = getGrid()
   if (grid) applyCurrentSimulation(grid)
@@ -70,6 +72,11 @@ function observeParent(parent: Element, grid: Element, host: HTMLElement): void 
   parentObserver.observe(parent, { childList: true })
 }
 
+function syncHostOpenState(host: HTMLElement): void {
+  const open = readEvolutionItemsPanelState()?.open ?? true
+  host.setAttribute('data-fid-plus-panel-open', open ? 'true' : 'false')
+}
+
 function renderPanel(host: HTMLElement): ReactDOM.Root {
   const root = ReactDOM.createRoot(host)
 
@@ -91,6 +98,7 @@ function mount(grid: Element): void {
   }
 
   const host = ensureHostBeforeGrid(grid, mounted?.host ?? document.getElementById(EVOLUTION_ITEMS_HOST_ID))
+  syncHostOpenState(host)
 
   if (mounted && mounted.host === host) {
     if (grid.parentElement) observeParent(grid.parentElement, grid, host)
@@ -148,6 +156,7 @@ function scheduleSync(): void {
 export function initEvolutionItems(): void {
   if (documentObserver) return
 
+  ensureEvolutionItemsPanelStyles()
   documentObserver = new MutationObserver(scheduleSync)
   documentObserver.observe(document.documentElement, { childList: true, subtree: true })
   syncMount()
@@ -163,5 +172,5 @@ export function destroyEvolutionItems(): void {
   documentObserver = null
   unmountUi()
   selected = { ...EMPTY_SELECTION }
-  bonuses = {}
+  simulation = EMPTY_SIMULATION
 }

@@ -50,6 +50,15 @@ describe('store-items-api', () => {
   it('parses a bonus entry', () => {
     expect(parseStoreItemBonus({ attr: 'drible', value: 4 })).toEqual({ attr: 'drible', value: 4 })
     expect(parseStoreItemBonus({ attr: 'forca', value: -3 })).toEqual({ attr: 'forca', value: -3 })
+    expect(parseStoreItemBonus({ attr: 'agilidade', value: 5, pct: true })).toEqual({
+      attr: 'agilidade',
+      value: 5,
+      pct: true,
+    })
+    expect(parseStoreItemBonus({ attr: 'agilidade', value: 5, pct: false })).toEqual({
+      attr: 'agilidade',
+      value: 5,
+    })
     expect(parseStoreItemBonus({ attr: 'drible', value: 0 })).toBeNull()
     expect(parseStoreItemBonus({ attr: '', value: 4 })).toBeNull()
   })
