@@ -14,8 +14,13 @@ import {
   selectSlot,
   simulationBonuses,
   toggleItem,
+  type AttrBonusDelta,
   type SelectedItems,
 } from './item-selection'
+
+function delta(flat: number, pct = 0): AttrBonusDelta {
+  return { flat, pct }
+}
 
 const EQUIPAVEL: StoreItem = {
   id: 'eq-1',
@@ -48,6 +53,24 @@ const EQUIPAVEL_ALT: StoreItem = {
   bonuses: [{ attr: 'forca', value: 3 }],
   category: 'v2_equipavel',
   sortOrder: 3,
+}
+
+const ESTUDO_PCT: StoreItem = {
+  id: 'st-pct',
+  name: 'Estudo Percentual',
+  price: 800,
+  bonuses: [{ attr: 'agilidade', value: 5, pct: true }],
+  category: 'v2_estudo',
+  sortOrder: 4,
+}
+
+const ESTUDO_PCT_ALT: StoreItem = {
+  id: 'st-pct-2',
+  name: 'Estudo Percentual Forte',
+  price: 900,
+  bonuses: [{ attr: 'agilidade', value: 7, pct: true }],
+  category: 'v2_estudo',
+  sortOrder: 5,
 }
 
 const LOADOUT: PlayerLoadout = {
@@ -95,9 +118,17 @@ describe('selectSlot', () => {
 describe('mergeBonuses', () => {
   it('sums overlapping attrs from both item types', () => {
     expect(mergeBonuses([EQUIPAVEL, ESTUDO])).toEqual({
-      drible: 4,
-      forca: -4,
-      agilidade: 5,
+      drible: delta(4),
+      forca: delta(-4),
+      agilidade: delta(5),
+    })
+  })
+
+  it('keeps percentage bonuses separate from flat values', () => {
+    expect(mergeBonuses([EQUIPAVEL, ESTUDO_PCT])).toEqual({
+      drible: delta(4),
+      forca: delta(-3),
+      agilidade: delta(0, 5),
     })
   })
 
@@ -188,15 +219,15 @@ describe('simulationBonuses', () => {
         { equipavel: 'eq-1', estudo: null },
       ),
     ).toEqual({
-      values: { velocidade: 1 },
-      deltas: { velocidade: 3 },
+      values: { velocidade: delta(1) },
+      deltas: { velocidade: delta(3) },
     })
   })
 
   it('applies the replacement bonuses and drops equipped attrs from the value', () => {
     expect(simulationBonuses(items, { equipavel: 'eq-2', estudo: 'st-1' }, equipped)).toEqual({
-      values: { drible: -4, forca: 6 },
-      deltas: { drible: 0, forca: 3 },
+      values: { drible: delta(-4), forca: delta(6) },
+      deltas: { drible: delta(0), forca: delta(3) },
     })
   })
 
@@ -221,15 +252,15 @@ describe('simulationBonuses', () => {
         { equipavel: 'eq-1', estudo: 'st-1' },
       ),
     ).toEqual({
-      values: { aceleracao: -1 },
-      deltas: { aceleracao: 4 },
+      values: { aceleracao: delta(-1) },
+      deltas: { aceleracao: delta(4) },
     })
   })
 
   it('subtracts equipped bonuses from the value when the slot is cleared', () => {
     expect(simulationBonuses(items, { equipavel: null, estudo: null }, equipped)).toEqual({
-      values: { drible: -4, forca: 4, agilidade: -5 },
-      deltas: { drible: 0, forca: 0, agilidade: 0 },
+      values: { drible: delta(-4), forca: delta(4), agilidade: delta(-5) },
+      deltas: { drible: delta(0), forca: delta(0), agilidade: delta(0) },
     })
   })
 
@@ -237,6 +268,19 @@ describe('simulationBonuses', () => {
     expect(simulationBonuses(items, { equipavel: 'eq-1', estudo: null }, { equipavel: 'eq-1', estudo: null })).toEqual({
       values: {},
       deltas: {},
+    })
+  })
+
+  it('subtracts and applies percentage bonuses without mixing them into flat values', () => {
+    expect(
+      simulationBonuses(
+        [ESTUDO_PCT, ESTUDO_PCT_ALT],
+        { equipavel: null, estudo: 'st-pct-2' },
+        { equipavel: null, estudo: 'st-pct' },
+      ),
+    ).toEqual({
+      values: { agilidade: delta(0, 2) },
+      deltas: { agilidade: delta(0, 7) },
     })
   })
 })

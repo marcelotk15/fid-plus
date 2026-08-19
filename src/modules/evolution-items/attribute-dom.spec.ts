@@ -1,11 +1,14 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
+import type { AttrBonusDelta, AttributeSimulation } from './item-selection'
+
 import {
   applyAttributeSimulation,
   ATTRS_GRID_SELECTOR,
   ensureHostBeforeGrid,
   EVOLUTION_ITEMS_HOST_ID,
   findAttributeValueElement,
+  formatBonusDelta,
   ORIGINAL_VALUE_ATTR,
   restoreAttributeSimulation,
   SIM_BAR_ATTR,
@@ -85,13 +88,47 @@ function getDeltaText(grid: HTMLElement, attr: string): string | null {
   return getDeltaSlot(grid, attr)?.textContent ?? null
 }
 
-function sim(values: Record<string, number>, deltas: Record<string, number> = values) {
-  return { values, deltas }
+function toFlatRecord(record: Record<string, number>): Record<string, AttrBonusDelta> {
+  return Object.fromEntries(Object.entries(record).map(([attr, flat]) => [attr, { flat, pct: 0 }]))
+}
+
+function sim(values: Record<string, number>, deltas: Record<string, number> = values): AttributeSimulation {
+  return { values: toFlatRecord(values), deltas: toFlatRecord(deltas) }
 }
 
 describe('attribute-dom', () => {
   afterEach(() => {
     document.body.replaceChildren()
+  })
+
+  it('applies percentage bonuses from the native base title', () => {
+    const grid = createGrid()
+
+    applyAttributeSimulation(grid, {
+      values: { agilidade: { flat: 0, pct: 5 } },
+      deltas: { agilidade: { flat: 0, pct: 5 } },
+    })
+
+    expect(getValueText(grid, 'agilidade')).toBe('74.73')
+    expect(getDeltaText(grid, 'agilidade')).toBe('+3.18')
+  })
+
+  it('falls back to the displayed value when the base title is missing', () => {
+    const grid = createGrid()
+
+    applyAttributeSimulation(grid, {
+      values: { velocidade: { flat: 0, pct: 5 } },
+      deltas: { velocidade: { flat: 0, pct: 5 } },
+    })
+
+    expect(getValueText(grid, 'velocidade')).toBe('75.13')
+    expect(getDeltaText(grid, 'velocidade')).toBe('+3.58')
+  })
+
+  it('formats non-integer bonus deltas with two decimals', () => {
+    expect(formatBonusDelta(3.1775)).toBe('+3.18')
+    expect(formatBonusDelta(5)).toBe('+5')
+    expect(formatBonusDelta(-3)).toBe('-3')
   })
 
   it('applies bonuses on top of the current displayed values', () => {
@@ -133,7 +170,7 @@ describe('attribute-dom', () => {
   it('subtracts the equipped bonus from the displayed value and shows the selected item delta', () => {
     const grid = createGrid()
 
-    applyAttributeSimulation(grid, { values: { velocidade: 1 }, deltas: { velocidade: 3 } })
+    applyAttributeSimulation(grid, sim({ velocidade: 1 }, { velocidade: 3 }))
 
     expect(getValueText(grid, 'velocidade')).toBe('72.55')
     expect(getDeltaText(grid, 'velocidade')).toBe('+3')

@@ -1,6 +1,7 @@
 export type StoreItemBonus = {
   attr: string
   value: number
+  pct?: boolean
 }
 
 export type StoreItemCategory = 'v2_equipavel' | 'v2_estudo'

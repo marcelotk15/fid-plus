@@ -27,7 +27,7 @@ const { EQUIPAVEL_ACTIVE, EQUIPAVEL_OTHER, LOADOUT } = vi.hoisted(() => {
     id: 'eq-2',
     name: 'Chuteira Pesada',
     price: 900,
-    bonuses: [{ attr: 'forca', value: 3 }],
+    bonuses: [{ attr: 'forca', value: 3, pct: true }],
     category: 'v2_equipavel',
     sortOrder: 1,
   }
@@ -151,9 +151,11 @@ describe('EvolutionItemsPanel', () => {
     const rows = [...document.querySelectorAll('[data-testid="evolution-items-panel-content"] button[aria-pressed]')]
 
     expect(rows[0]?.textContent).toContain('Chuteira Veloz')
+    expect(rows[0]?.textContent).toContain('+4 Drible')
     expect(rows[0]?.textContent).toContain('atual ativo na build')
     expect(rows[0]?.getAttribute('aria-pressed')).toBe('true')
     expect(rows[1]?.textContent).toContain('Chuteira Pesada')
+    expect(rows[1]?.textContent).toContain('+3% Força')
     expect(rows[1]?.textContent).not.toContain('atual ativo na build')
     expect(rows[1]?.getAttribute('aria-pressed')).toBe('false')
     expect(onSelectionChange).toHaveBeenCalledWith({ equipavel: 'eq-1', estudo: null }, { values: {}, deltas: {} })
@@ -181,7 +183,7 @@ describe('EvolutionItemsPanel', () => {
     expect(active.textContent).toContain('atual ativo na build')
     expect(onSelectionChange).toHaveBeenLastCalledWith(
       { equipavel: null, estudo: null },
-      { values: { drible: -4 }, deltas: { drible: 0 } },
+      { values: { drible: { flat: -4, pct: 0 } }, deltas: { drible: { flat: 0, pct: 0 } } },
     )
   })
 
@@ -209,10 +211,14 @@ describe('EvolutionItemsPanel', () => {
     expect(nextRows[0]?.textContent).toContain('atual ativo na build')
     expect(nextRows[0]?.getAttribute('aria-pressed')).toBe('false')
     expect(nextRows[1]?.textContent).toContain('Chuteira Pesada')
+    expect(nextRows[1]?.textContent).toContain('+3%')
     expect(nextRows[1]?.getAttribute('aria-pressed')).toBe('true')
     expect(onSelectionChange).toHaveBeenLastCalledWith(
       { equipavel: 'eq-2', estudo: null },
-      { values: { drible: -4, forca: 3 }, deltas: { drible: 0, forca: 3 } },
+      {
+        values: { drible: { flat: -4, pct: 0 }, forca: { flat: 0, pct: 3 } },
+        deltas: { drible: { flat: 0, pct: 0 }, forca: { flat: 0, pct: 3 } },
+      },
     )
   })
 })

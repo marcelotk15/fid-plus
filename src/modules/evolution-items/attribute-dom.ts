@@ -1,6 +1,8 @@
 import { ATTRIBUTE_LABELS } from '~/modules/shared/attribute-labels'
 import { getTextContent, normalizeText } from '~/modules/shared/text'
 
+import type { AttrBonusDelta, AttributeSimulation } from './item-selection'
+
 export const ATTRS_GRID_SELECTOR = '[data-tour="attrs-grid"]'
 export const EVOLUTION_ITEMS_HOST_ID = 'fid-plus-evolution-items'
 export const SIM_DELTA_ATTR = 'data-fid-plus-sim-delta'
@@ -23,7 +25,34 @@ export function formatAttributeValue(value: number): string {
 }
 
 export function formatBonusDelta(value: number): string {
-  return `${value > 0 ? '+' : ''}${value}`
+  const rounded = Math.round(value * 100) / 100
+  const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2)
+
+  return `${rounded > 0 ? '+' : ''}${text}`
+}
+
+function parseAttributeBase(valueEl: HTMLElement): number | null {
+  let current: HTMLElement | null = valueEl
+
+  while (current) {
+    const title = current.getAttribute('title')
+
+    if (title) {
+      const match = title.match(/Base:\s*([+-]?[\d.,]+)/)
+      const parsed = match?.[1] ? parseDisplayedValue(match[1]) : null
+      if (parsed !== null) return parsed
+    }
+
+    current = current.parentElement
+  }
+
+  return null
+}
+
+export function resolveBonusDelta(delta: AttrBonusDelta | undefined, base: number): number {
+  if (!delta) return 0
+
+  return delta.flat + (base * delta.pct) / 100
 }
 
 export function parseDisplayedValue(text: string): number | null {
@@ -343,11 +372,6 @@ function readOriginalValue(valueEl: HTMLElement, displayed: number): number {
   return displayed
 }
 
-type AttributeSimulation = {
-  values: Record<string, number>
-  deltas: Record<string, number>
-}
-
 export function applyAttributeSimulation(grid: ParentNode, simulation: AttributeSimulation): boolean {
   let changed = false
 
@@ -379,8 +403,9 @@ export function applyAttributeSimulation(grid: ParentNode, simulation: Attribute
       continue
     }
 
-    const valueDelta = simulation.values[attr] ?? 0
-    const displayDelta = simulation.deltas[attr] ?? 0
+    const base = parseAttributeBase(valueEl) ?? original
+    const valueDelta = resolveBonusDelta(simulation.values[attr], base)
+    const displayDelta = resolveBonusDelta(simulation.deltas[attr], base)
     const simulated = original + valueDelta
     const formatted = formatAttributeValue(simulated)
 

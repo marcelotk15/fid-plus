@@ -96,7 +96,8 @@ function BonusChip({ bonus }: { bonus: StoreItemBonus }) {
       )}
     >
       {positive ? '+' : ''}
-      {bonus.value} {getAttributeLabel(bonus.attr)}
+      {bonus.value}
+      {bonus.pct ? '%' : ''} {getAttributeLabel(bonus.attr)}
     </span>
   )
 }
@@ -134,7 +135,7 @@ function ItemRow({
       {item.bonuses.length > 0 ? (
         <div className="mt-1.5 flex flex-wrap gap-1">
           {item.bonuses.map((bonus) => (
-            <BonusChip key={`${item.id}-${bonus.attr}-${bonus.value}`} bonus={bonus} />
+            <BonusChip key={`${item.id}-${bonus.attr}-${bonus.value}-${bonus.pct === true}`} bonus={bonus} />
           ))}
         </div>
       ) : null}

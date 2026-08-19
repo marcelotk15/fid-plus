@@ -29,12 +29,50 @@ export function selectSlot(selected: SelectedItems, slot: ItemSlot, clickedId: s
   }
 }
 
-export function mergeBonuses(items: Array<{ bonuses: StoreItemBonus[] }>): Record<string, number> {
-  const totals: Record<string, number> = {}
+export type AttrBonusDelta = {
+  flat: number
+  pct: number
+}
+
+export type AttributeSimulation = {
+  values: Record<string, AttrBonusDelta>
+  deltas: Record<string, AttrBonusDelta>
+}
+
+export const EMPTY_SIMULATION: AttributeSimulation = {
+  values: {},
+  deltas: {},
+}
+
+function emptyDelta(): AttrBonusDelta {
+  return { flat: 0, pct: 0 }
+}
+
+function isEmptyDelta(delta: AttrBonusDelta): boolean {
+  return delta.flat === 0 && delta.pct === 0
+}
+
+function addBonusValue(delta: AttrBonusDelta, bonus: StoreItemBonus): AttrBonusDelta {
+  if (bonus.pct) {
+    return { flat: delta.flat, pct: delta.pct + bonus.value }
+  }
+
+  return { flat: delta.flat + bonus.value, pct: delta.pct }
+}
+
+function subtractDeltas(selected: AttrBonusDelta, equipped: AttrBonusDelta): AttrBonusDelta {
+  return {
+    flat: selected.flat - equipped.flat,
+    pct: selected.pct - equipped.pct,
+  }
+}
+
+export function mergeBonuses(items: Array<{ bonuses: StoreItemBonus[] }>): Record<string, AttrBonusDelta> {
+  const totals: Record<string, AttrBonusDelta> = {}
 
   for (const item of items) {
     for (const bonus of item.bonuses) {
-      totals[bonus.attr] = (totals[bonus.attr] ?? 0) + bonus.value
+      totals[bonus.attr] = addBonusValue(totals[bonus.attr] ?? emptyDelta(), bonus)
     }
   }
 
@@ -90,16 +128,6 @@ export function pinActiveItem(items: StoreItem[], activeId: string | null): Stor
   return [active, ...next]
 }
 
-export type AttributeSimulation = {
-  values: Record<string, number>
-  deltas: Record<string, number>
-}
-
-export const EMPTY_SIMULATION: AttributeSimulation = {
-  values: {},
-  deltas: {},
-}
-
 export function simulationBonuses(
   items: StoreItem[],
   selected: SelectedItems,
@@ -116,8 +144,8 @@ export function simulationBonuses(
     estudo: selected.estudo === equipped.estudo ? null : selected.estudo,
   }
   const displayTotals = mergeBonuses(resolveSelectedItems(items, replacement))
-  const values: Record<string, number> = {}
-  const deltas: Record<string, number> = {}
+  const values: Record<string, AttrBonusDelta> = {}
+  const deltas: Record<string, AttrBonusDelta> = {}
   const attrs = new Set([
     ...Object.keys(selectedTotals),
     ...Object.keys(equippedTotals),
@@ -125,14 +153,14 @@ export function simulationBonuses(
   ])
 
   for (const attr of attrs) {
-    const selectedBonus = selectedTotals[attr] ?? 0
-    const equippedBonus = equippedTotals[attr] ?? 0
-    const displayBonus = displayTotals[attr] ?? 0
-    const valueDelta = selectedBonus - equippedBonus
+    const selectedBonus = selectedTotals[attr] ?? emptyDelta()
+    const equippedBonus = equippedTotals[attr] ?? emptyDelta()
+    const displayBonus = displayTotals[attr] ?? emptyDelta()
+    const valueDelta = subtractDeltas(selectedBonus, equippedBonus)
 
-    if (valueDelta === 0 && displayBonus === 0) continue
+    if (isEmptyDelta(valueDelta) && isEmptyDelta(displayBonus)) continue
 
-    if (valueDelta !== 0) values[attr] = valueDelta
+    if (!isEmptyDelta(valueDelta)) values[attr] = valueDelta
     deltas[attr] = displayBonus
   }
 

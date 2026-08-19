@@ -80,7 +80,7 @@ describe('loadout-api', () => {
         id: 'st-1',
         name: 'Estudo de Agilidade',
         price: 800,
-        bonuses: [{ attr: 'agilidade', value: 5 }],
+        bonuses: [{ attr: 'agilidade', value: 5, pct: true }],
         category: 'v2_estudo',
         sortOrder: -1,
       },

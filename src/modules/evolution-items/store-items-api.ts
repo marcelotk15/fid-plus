@@ -15,7 +15,11 @@ export function parseStoreItemBonus(value: unknown): StoreItemBonus | null {
   if (typeof row.attr !== 'string' || row.attr.length === 0) return null
   if (typeof row.value !== 'number' || !Number.isFinite(row.value) || row.value === 0) return null
 
-  return { attr: row.attr, value: row.value }
+  return {
+    attr: row.attr,
+    value: row.value,
+    ...(row.pct === true ? { pct: true } : {}),
+  }
 }
 
 function parseBonuses(value: unknown): StoreItemBonus[] {
