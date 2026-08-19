@@ -1,6 +1,7 @@
 export type StoreItemBonus = {
   attr: string
   value: number
+  pct?: boolean
 }
 
 export type StoreItemCategory = 'v2_equipavel' | 'v2_estudo'
@@ -12,4 +13,9 @@ export type StoreItem = {
   bonuses: StoreItemBonus[]
   category: StoreItemCategory
   sortOrder: number
+}
+
+export type PlayerLoadout = {
+  equipavel: StoreItem | null
+  estudo: StoreItem | null
 }
