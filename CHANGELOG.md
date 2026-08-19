@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7.0](https://github.com/marcelotk15/fid-plus/compare/v0.6.0...v0.7.0) (2026-08-19)
+
+
+### Features
+
+* enhance attribute simulation with percentage bonuses and refactor related components ([78e7991](https://github.com/marcelotk15/fid-plus/commit/78e79918513982deb343a24c94432fc150f66d26))
+* enhance evolution items panel with drop down state persistence and styling ([310677a](https://github.com/marcelotk15/fid-plus/commit/310677a87363cba7c98ea72f71d6b6fd39ab69e4))
+* refactor attribute simulation and integrate player loadout management ([604b06a](https://github.com/marcelotk15/fid-plus/commit/604b06ac1099a970daed900af42bc5760d98481e))
+
+
+### Bug Fixes
+
+* improve build simulation ([a05dde4](https://github.com/marcelotk15/fid-plus/commit/a05dde4ee732d899e5edb2143d2e6fe03266cd34))
+* improve build simulator ([fac9a75](https://github.com/marcelotk15/fid-plus/commit/fac9a757cd59436c91162bd734f6258a439de938))
+
+
+### Code Refactoring
+
+* clean up imports and improve code formatting in evolution items module ([15f1a2e](https://github.com/marcelotk15/fid-plus/commit/15f1a2ec61954bc7cf127a78fe4d5f12bcbad6fd))
+
 ## [0.6.0](https://github.com/marcelotk15/fid-plus/compare/v0.5.0...v0.6.0) (2026-08-18)
 
 
